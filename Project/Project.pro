@@ -10,4 +10,8 @@ CONFIG(debug, debug|release){
     LIBS += -lsfml-audio -lsfml-graphics -lsfml-network -lsfml-system -lsfml-window
 }
 SOURCES += \
+        character.cpp \
         main.cpp
+
+HEADERS += \
+    character.h
