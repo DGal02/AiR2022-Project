@@ -6,14 +6,26 @@ class Character : public sf::Sprite
 {
 private:
     int speed_x;
-    int speed_y;
+    int speed_gravitation;
     bool on_ground_left;
     bool on_ground_right;
+    sf::Clock* jump_clock;
+    float va_gravitation;
+
 public:
     Character(const sf::Texture &texture);
     Character();
+    ~Character();
     void walk(const sf::Time &elapsed,int x,sf::View &my_view);
-    void gravitation(const sf::Time &elapsed);
+    void gravitation(const sf::Time &elapsed, sf::View &view);
+    void set_ground_false();
+    void check_left(const sf::Sprite &wall,const sf::Time &elapsed);
+    void check_right(const sf::Sprite &wall,const sf::Time &elapsed);
+    void set_jump();
+    void jump(const sf::Time &elapsed, sf::View &view);
+
+    sf::Clock* r_jump_clock();
+    bool on_ground();
 };
 
 

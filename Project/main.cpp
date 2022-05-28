@@ -6,7 +6,7 @@
 void Create_wall(std::vector<sf::Sprite> &walls, const sf::Texture &texture,int x,int y){
     sf::Sprite wall;
     wall.setTexture(texture);
-    wall.setTextureRect(sf::IntRect(0,0,100,15));
+    wall.setTextureRect(sf::IntRect(0,0,200,35));
     wall.setPosition(x,y);
     walls.emplace_back(wall);
 }
@@ -16,23 +16,25 @@ int main() {
 
     // Initialize variables
     sf::RenderWindow window(sf::VideoMode(window_x, window_y), "Jump or Die");
+    window.setVerticalSyncEnabled(true);
     std::vector<sf::Sprite> walls;
+    std::vector<sf::Sprite> mob_spawns;
     sf::Clock clock;
     sf::View view1(sf::FloatRect(0.f, 0.f, 1600.f, 800.f));
 
     //Load textures
     sf::Texture texture;
-    if (!texture.loadFromFile("grass.png")) {
+    if (!texture.loadFromFile("space.png")) {
         std::cerr << "Could not load texture" << std::endl;
         return 1;
     }
     texture.setRepeated(true);
-    sf::Sprite grass;
-    grass.setTexture(texture);
-    grass.setTextureRect(sf::IntRect(0, 0, 2000, 800));
+    sf::Sprite space;
+    space.setTexture(texture);
+    space.setTextureRect(sf::IntRect(0, 0, 2000, 1100));
 
     sf::Texture texture_character;
-    grass.setPosition(0,0);
+    space.setPosition(0,-300);
 
 
     if(!texture_character.loadFromFile("guy.png")) { return 1; }
@@ -43,8 +45,17 @@ int main() {
     }
     texture_wall.setRepeated(true);
 
+    sf::Texture texture_mob_resp;
+    if(!texture_mob_resp.loadFromFile("mob_resp.png")) {return 1;}
+    //Create Mob Resps
+    sf::Sprite resp1;
+    resp1.setTexture(texture_mob_resp);
+    resp1.setPosition(1000.f-(resp1.getGlobalBounds().width/2),-325-resp1.getGlobalBounds().height);
+    mob_spawns.emplace_back(resp1);
     //Create Walls
+    Create_wall(walls,texture_wall,800,200);
     Create_wall(walls,texture_wall,800,500);
+    Create_wall(walls,texture_wall,10,700);
 
 
 
@@ -82,8 +93,25 @@ int main() {
 
 
         }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+        {
+
+            character->set_jump();
+
+
+        }
         //Gravitation
-        character->gravitation(elapsed);
+        character->set_ground_false();
+        for(const auto &item:walls){
+            if(character->on_ground()){
+                break;
+            }
+            character->check_left(item,elapsed);
+            character->check_right(item,elapsed);
+
+        }
+        character->gravitation(elapsed,view1);
+        character->jump(elapsed,view1);
         //window manipulation
         window.setView(view1);
 
@@ -91,8 +119,11 @@ int main() {
         window.clear(sf::Color::Black);
 
 
-        window.draw(grass);
+        window.draw(space);
         for(const auto&item:walls){
+            window.draw(item);
+        }
+        for(const auto&item:mob_spawns){
             window.draw(item);
         }
         window.draw(*character);
