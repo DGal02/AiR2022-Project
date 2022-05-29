@@ -108,3 +108,18 @@ void Character::reduce_life(int x){
 int Character::get_hp(){
     return hp;
 }
+bool Character::przegrana(){
+    if(hp<=0){
+        return true;
+    }
+    return false;
+}
+bool Character::wygrana(){
+    if(points>=200){
+        return true;
+    }
+    return false;
+}
+void Character::add_points(int x){
+    points+=x;
+}

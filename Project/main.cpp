@@ -11,6 +11,24 @@ void Create_wall(std::vector<sf::Sprite> &walls, const sf::Texture &texture,int 
     wall.setPosition(x,y);
     walls.emplace_back(wall);
 }
+void Wygrana(sf::RenderWindow &window,sf::Text &text){
+    text.setString("WYGRANA!");
+    text.setPosition(20,20);
+    text.setFillColor(sf::Color::Green);
+    window.setView(sf::View(sf::FloatRect(0,0,1600,800)));
+    window.clear(sf::Color::Black);
+    window.draw(text);
+    window.display();
+}
+void Przegrana(sf::RenderWindow &window,sf::Text &text){
+    text.setString("PRZEGRANA!");
+    text.setPosition(20,20);
+    text.setFillColor(sf::Color::Red);
+    window.setView(sf::View(sf::FloatRect(0,0,1600,800)));
+    window.clear(sf::Color::Black);
+    window.draw(text);
+    window.display();
+}
 int window_x=1600;
 int window_y=800;
 int main() {
@@ -63,7 +81,9 @@ int main() {
     if(!texture_fire3.loadFromFile("fire3.gif")) {return 1;}
     texture_fire3.setRepeated(true);
 
-
+    sf::Font font;
+    // Load it from a file
+    if (!font.loadFromFile("czcionka.ttf")) { return 1; }
 
     //Create Mob Resps
     sf::Sprite resp1;
@@ -96,9 +116,17 @@ int main() {
     fire.setPosition(0,800);
     fire.scale(3.f,3.f);
     fire.setTextureRect(sf::IntRect(0,0,2000.f/3.f,20));
+        //Text
+    sf::Text text;
+    text.setFont(font);
+    text.setCharacterSize(250);
+
+
     // run the program as long as the window is open
 
     while (window.isOpen()) {
+        //Przegrana
+
         // check all the window's events that were triggered since the last iteration of the loop
         sf::Event event;
         sf::Time elapsed=clock.restart();
@@ -107,7 +135,17 @@ int main() {
             if (event.type == sf::Event::Closed)
                 window.close();
         }
+        //Victory/loss
+        if(character->przegrana()){
+            Przegrana(window,text);
+            continue;
+        }
+        if(character->wygrana()){
+            Wygrana(window,text);
+            continue;
+        }
         //Movement
+
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
         {
 
@@ -129,6 +167,7 @@ int main() {
 
         }
         //Gravitation
+
         character->set_ground_false();
         for(const auto &item:walls){
             if(character->on_ground()){

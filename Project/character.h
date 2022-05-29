@@ -27,8 +27,11 @@ public:
     void jump(const sf::Time &elapsed, sf::View &view);
     void reduce_life(int x=1);
     sf::Clock* r_jump_clock();
-    int get_hp();
+    int get_hp(); 
     bool on_ground();
+    bool przegrana();
+    bool wygrana();
+    void add_points(int x=1);
 };
 
 
