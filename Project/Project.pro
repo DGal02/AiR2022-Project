@@ -11,7 +11,9 @@ CONFIG(debug, debug|release){
 }
 SOURCES += \
         character.cpp \
+        fire.cpp \
         main.cpp
 
 HEADERS += \
-    character.h
+    character.h \
+    fire.h

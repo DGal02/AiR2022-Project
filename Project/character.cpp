@@ -9,6 +9,8 @@ Character::Character(const sf::Texture &text)
      speed_gravitation=200;
      jump_clock=NULL;
      va_gravitation=0;
+     hp=5;
+     points=0;
 }
 Character::~Character(){
     delete jump_clock;
@@ -99,4 +101,10 @@ void Character::jump(const sf::Time &elapsed,sf::View &view){
     move(0,-elapsed.asSeconds()*speed_gravitation*3);
     view.move(0,-elapsed.asSeconds()*speed_gravitation*3);
     va_gravitation=0;
+}
+void Character::reduce_life(int x){
+    hp-=x;
+}
+int Character::get_hp(){
+    return hp;
 }
