@@ -11,6 +11,12 @@ void Create_wall(std::vector<sf::Sprite> &walls, const sf::Texture &texture,int 
     wall.setPosition(x,y);
     walls.emplace_back(wall);
 }
+void Create_mob_resp(std::vector<sf::Sprite> &mob_resp,const sf::Texture &texture){
+    sf::Sprite temp_resp;
+    temp_resp.setTexture(texture);
+    mob_resp.emplace_back(temp_resp);
+}
+
 void Wygrana(sf::RenderWindow &window,sf::Text &text){
     text.setString("WYGRANA!");
     text.setPosition(20,20);
@@ -29,17 +35,40 @@ void Przegrana(sf::RenderWindow &window,sf::Text &text){
     window.draw(text);
     window.display();
 }
-int window_x=1600;
-int window_y=800;
+void CheckView(sf::RenderWindow &window,sf::View &view,const Fire &fire){
+    float x=view.getCenter().x-window.getSize().x/2;
+    float y=view.getCenter().y-window.getSize().y/2;
+    if(x<0){
+        x=0;
+    }
+    if(x+window.getSize().x>window.getSize().x*1.25){
+        x=window.getSize().x*1.25-window.getSize().x;
+    }
+    if(y<-300){
+        y=-300;
+    }
+    if(y+window.getSize().y>800.f+fire.getGlobalBounds().height){
+        y=800.f+fire.getGlobalBounds().height-window.getSize().y;
+    }
+    window.setView(sf::View(sf::FloatRect(x,y,window.getSize().x,window.getSize().y)));
+
+//    std::cout << "viewx:" << view.getViewport().left << " viewy:" << view.getViewport().top << std::endl;
+
+}
+
 int main() {
 
     // Initialize variables
+    int window_x=1600;
+    int window_y=800;
     sf::RenderWindow window(sf::VideoMode(window_x, window_y), "Jump or Die");
     window.setVerticalSyncEnabled(true);
+    window.setFramerateLimit(144);
+
     std::vector<sf::Sprite> walls;
     std::vector<sf::Sprite> mob_spawns;
     sf::Clock clock;
-    sf::View view1(sf::FloatRect(0.f, 0.f, 1600.f, 800.f));
+    sf::View view1(sf::FloatRect(0.f, 0.f, window.getSize().x, window.getSize().y));
 
     //Load textures
     sf::Texture texture;
@@ -49,7 +78,7 @@ int main() {
     texture.setRepeated(true);
     sf::Sprite space;
     space.setTexture(texture);
-    space.setTextureRect(sf::IntRect(0, 0, 2000, 1100));
+    space.setTextureRect(sf::IntRect(0, 0, window.getSize().x*1.25, window.getSize().y+300.f));
 
     sf::Texture texture_character;
     space.setPosition(0,-300);
@@ -86,10 +115,12 @@ int main() {
     if (!font.loadFromFile("czcionka.ttf")) { return 1; }
 
     //Create Mob Resps
-    sf::Sprite resp1;
-    resp1.setTexture(texture_mob_resp);
-    resp1.setPosition(1000.f-(resp1.getGlobalBounds().width/2),-325-resp1.getGlobalBounds().height);
-    mob_spawns.emplace_back(resp1);
+    Create_mob_resp(mob_spawns,texture_mob_resp);
+
+    mob_spawns[0].setPosition(1000.f-(mob_spawns[0].getGlobalBounds().width/2),-300);
+    Create_mob_resp(mob_spawns,texture_mob_resp);
+    mob_spawns[1].setPosition(0,window.getSize().y/2.f-300.f/2.f-mob_spawns[1].getGlobalBounds().height/2.f);
+
     //Create Walls
     Create_wall(walls,texture_wall,600,200);
     Create_wall(walls,texture_wall,800,500);
@@ -184,8 +215,10 @@ int main() {
 
         }
         fire.animate();
+
         //window manipulation
-        window.setView(view1);
+       CheckView(window,view1,fire);
+        //window.setView(view1);
 
 
         window.clear(sf::Color::Black);

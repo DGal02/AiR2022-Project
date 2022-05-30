@@ -6,11 +6,12 @@ Character::Character(const sf::Texture &text)
      on_ground_left=false;
      on_ground_right=false;
      speed_x=500;
-     speed_gravitation=200;
+     speed_gravitation=200; //Wczytanie
      jump_clock=NULL;
      va_gravitation=0;
-     hp=5;
+     hp=5; //Wczytanie
      points=0;
+     const_a_gravitation=300;
 }
 Character::~Character(){
     delete jump_clock;
@@ -38,7 +39,7 @@ void Character::gravitation(const sf::Time &elapsed,sf::View &view){
     if(on_ground()){
         va_gravitation=0;
     }else{
-        va_gravitation+=elapsed.asSeconds()*250;
+        va_gravitation+=elapsed.asSeconds()*const_a_gravitation;
         float moveY=elapsed.asSeconds()*va_gravitation;
         move(0,moveY);
         view.move(0,moveY);

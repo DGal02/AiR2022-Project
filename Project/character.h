@@ -13,6 +13,7 @@ private:
     float va_gravitation;
     int hp;
     int points;
+    int const_a_gravitation;
 
 public:
     Character(const sf::Texture &texture);
