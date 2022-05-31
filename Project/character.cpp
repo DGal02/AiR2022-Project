@@ -8,6 +8,7 @@ Character::Character(const sf::Texture &text)
      speed_x=500;
      speed_gravitation=200; //Wczytanie
      jump_clock=NULL;
+     collision_clock=NULL;
      va_gravitation=0;
      hp=5; //Wczytanie
      points=0;
@@ -15,6 +16,7 @@ Character::Character(const sf::Texture &text)
 }
 Character::~Character(){
     delete jump_clock;
+    delete collision_clock;
 }
 void Character::walk(const sf::Time &elapsed, int x, sf::View &my_view){
 
@@ -123,4 +125,20 @@ bool Character::wygrana(){
 }
 void Character::add_points(int x){
     points+=x;
+}
+void Character::collision(sf::Sound &sound){
+    if(!(collision_clock==NULL)){
+        if(collision_clock->getElapsedTime().asSeconds()>=5.0){
+
+            collision_clock->restart();
+            delete collision_clock;
+            collision_clock=NULL;
+        }
+    }
+    if(collision_clock==NULL){
+       hp--;
+       sound.play();
+       collision_clock=new sf::Clock;
+
+    }
 }

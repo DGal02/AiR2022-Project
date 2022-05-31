@@ -2,6 +2,7 @@
 
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include "character.h"
 #include "fire.h"
 #include "enemy.h"
@@ -125,6 +126,13 @@ int main() {
     // Load it from a file
     if (!font.loadFromFile("czcionka.ttf")) { return 1; }
 
+
+    sf::SoundBuffer buffer;
+    if (!buffer.loadFromFile("uderzenie2.wav"))
+            {return -1;}
+    sf::Sound sound(buffer);
+
+
     //Create Mob Resps
     Create_mob_resp(mob_spawns,texture_mob_resp);
     mob_spawns[0].setPosition(1000.f-(mob_spawns[0].getGlobalBounds().width/2),-300);
@@ -147,8 +155,6 @@ int main() {
 
 
 
-    float width=texture_character.getSize().x;
-    float height=texture_character.getSize().y;
 
 
 
@@ -166,6 +172,10 @@ int main() {
     sf::Text text;
     text.setFont(font);
     text.setCharacterSize(250);
+
+    sf::Text text_hp;
+    text.setFont(font);
+    text.setCharacterSize(25);
     new_enemy<Fly>(enemies,texture_fly,100.f,600.f);
     // run the program as long as the window is open
     while (window.isOpen()) {
@@ -178,6 +188,14 @@ int main() {
             // "close requested" event: we close the window
             if (event.type == sf::Event::Closed)
                 window.close();
+            if (event.type == sf::Event::MouseButtonPressed) {
+                if(event.mouseButton.button == sf::Mouse::Left) {
+                    sf::Vector2i mouse_pos = sf::Mouse::getPosition(window);
+
+                    std::cout << "KLIK!" << std::endl;
+
+                }
+            }
         }
         //Victory/loss
         if(character->przegrana()){
@@ -211,6 +229,7 @@ int main() {
             character->set_jump();
 
 
+
         }
         //Gravitation +animations
 
@@ -234,7 +253,12 @@ int main() {
             item->catch_character(elapsed,character->getGlobalBounds());
             item->animate();
         }
-
+        //Collision check
+        for(const auto &item:enemies){
+            if(character->getGlobalBounds().intersects(item->getGlobalBounds())){
+                character->collision(sound);
+            }
+        }
         //window manipulation
         CheckView(window,view1,fire);
         window.clear(sf::Color::Black);

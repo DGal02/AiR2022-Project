@@ -1,7 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <iostream>
-
+#include <SFML/Audio.hpp>
 class Character : public sf::Sprite
 {
 private:
@@ -10,6 +10,7 @@ private:
     bool on_ground_left;
     bool on_ground_right;
     sf::Clock* jump_clock;
+    sf::Clock* collision_clock;
     float va_gravitation;
     int hp;
     int points;
@@ -33,6 +34,7 @@ public:
     bool przegrana();
     bool wygrana();
     void add_points(int x=1);
+    void collision(sf::Sound &sound);
 };
 
 

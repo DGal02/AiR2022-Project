@@ -4,9 +4,8 @@ Fly::Fly(const sf::Texture &texture) :Enemy(texture)
 {
     frame=0;
     setTextureRect(sf::IntRect(32*frame, 0, 32, 32));
-    speed_x=100;
-    speed_y=100;
-    scalar_speed=150;
+
+    scalar_speed=100;
 }
 void Fly::animate(){
     if(timer_animation.getElapsedTime().asSeconds()<=0.1f){
