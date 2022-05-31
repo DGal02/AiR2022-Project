@@ -147,7 +147,8 @@ int main() {
 
 
 
-
+    float width=texture_character.getSize().x;
+    float height=texture_character.getSize().y;
 
 
 
@@ -193,12 +194,14 @@ int main() {
         {
 
             character->walk(elapsed,1,view1);
+            character->setTextureRect(sf::IntRect(0, 0, texture_character.getSize().x, texture_character.getSize().y));
 
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
         {
 
             character->walk(elapsed,-1,view1);
+            character->setTextureRect(sf::IntRect(texture_character.getSize().x, 0, -texture_character.getSize().x, texture_character.getSize().y));
 
 
         }
