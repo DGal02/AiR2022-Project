@@ -11,9 +11,13 @@ CONFIG(debug, debug|release){
 }
 SOURCES += \
         character.cpp \
+        enemy.cpp \
         fire.cpp \
+        fly.cpp \
         main.cpp
 
 HEADERS += \
     character.h \
-    fire.h
+    enemy.h \
+    fire.h \
+    fly.h

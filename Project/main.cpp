@@ -4,6 +4,8 @@
 #include <SFML/Graphics.hpp>
 #include "character.h"
 #include "fire.h"
+#include "enemy.h"
+#include "fly.h"
 void Create_wall(std::vector<sf::Sprite> &walls, const sf::Texture &texture,int x,int y){
     sf::Sprite wall;
     wall.setTexture(texture);
@@ -72,7 +74,7 @@ int main() {
 
     //Load textures
     sf::Texture texture;
-    if (!texture.loadFromFile("space.png")) {
+    if (!texture.loadFromFile("textures/space.png")) {
         return 1;
     }
     texture.setRepeated(true);
@@ -84,31 +86,34 @@ int main() {
     space.setPosition(0,-300);
 
 
-    if(!texture_character.loadFromFile("guy.png")) { return 1; }
+    if(!texture_character.loadFromFile("textures/guy.png")) { return 1; }
     sf::Texture texture_wall;
-    if (!texture_wall.loadFromFile("wall.png")) {
+    if (!texture_wall.loadFromFile("textures/wall.png")) {
         return 1;
     }
     texture_wall.setRepeated(true);
 
     sf::Texture texture_mob_resp;
-    if(!texture_mob_resp.loadFromFile("mob_resp.png")) {return 1;}
+    if(!texture_mob_resp.loadFromFile("textures/mob_resp.png")) {return 1;}
 
     sf::Texture texture_fire0;
-    if(!texture_fire0.loadFromFile("fire0.gif")) {return 1;}
+    if(!texture_fire0.loadFromFile("textures/fire0.gif")) {return 1;}
     texture_fire0.setRepeated(true);
 
     sf::Texture texture_fire1;
-    if(!texture_fire1.loadFromFile("fire1.gif")) {return 1;}
+    if(!texture_fire1.loadFromFile("textures/fire1.gif")) {return 1;}
     texture_fire1.setRepeated(true);
 
     sf::Texture texture_fire2;
-    if(!texture_fire2.loadFromFile("fire2.gif")) {return 1;}
+    if(!texture_fire2.loadFromFile("textures/fire2.gif")) {return 1;}
     texture_fire2.setRepeated(true);
 
     sf::Texture texture_fire3;
-    if(!texture_fire3.loadFromFile("fire3.gif")) {return 1;}
+    if(!texture_fire3.loadFromFile("textures/fire3.gif")) {return 1;}
     texture_fire3.setRepeated(true);
+
+    sf::Texture texture_fly;
+    if(!texture_fly.loadFromFile("textures/fly.png")) {return 1;}
 
     sf::Font font;
     // Load it from a file
@@ -116,10 +121,13 @@ int main() {
 
     //Create Mob Resps
     Create_mob_resp(mob_spawns,texture_mob_resp);
-
     mob_spawns[0].setPosition(1000.f-(mob_spawns[0].getGlobalBounds().width/2),-300);
+
     Create_mob_resp(mob_spawns,texture_mob_resp);
     mob_spawns[1].setPosition(0,window.getSize().y/2.f-300.f/2.f-mob_spawns[1].getGlobalBounds().height/2.f);
+
+    Create_mob_resp(mob_spawns,texture_mob_resp);
+    mob_spawns[2].setPosition(window.getSize().x*1.25-mob_spawns[2].getGlobalBounds().width,window.getSize().y/2.f-300.f/2.f-mob_spawns[1].getGlobalBounds().height/2.f);
 
     //Create Walls
     Create_wall(walls,texture_wall,600,200);
@@ -151,7 +159,7 @@ int main() {
     sf::Text text;
     text.setFont(font);
     text.setCharacterSize(250);
-
+    Fly fly(texture_fly);
 
     // run the program as long as the window is open
 
@@ -216,10 +224,12 @@ int main() {
         }
         fire.animate();
 
+        fly.animate();
         //window manipulation
        CheckView(window,view1,fire);
+       //fly.setPosition(window.getView().getCenter().x-window.getView().getSize().x/2,window.getView().getCenter().y-window.getView().getSize().y/2);
         //window.setView(view1);
-
+        fly.catch_character(elapsed,character->getGlobalBounds());
 
         window.clear(sf::Color::Black);
 
@@ -231,6 +241,7 @@ int main() {
         for(const auto&item:mob_spawns){
             window.draw(item);
         }
+        window.draw(fly);
         window.draw(fire);
         window.draw(*character);
         // end the current frame
