@@ -10,6 +10,7 @@ protected:
 public:
     Enemy(const sf::Texture &texture);
     virtual void catch_character(const sf::Time &elapsed, const sf::FloatRect &bounds);
+    virtual void animate();
 };
 
 

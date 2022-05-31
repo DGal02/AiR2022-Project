@@ -53,9 +53,13 @@ void CheckView(sf::RenderWindow &window,sf::View &view,const Fire &fire){
         y=800.f+fire.getGlobalBounds().height-window.getSize().y;
     }
     window.setView(sf::View(sf::FloatRect(x,y,window.getSize().x,window.getSize().y)));
+}
 
-//    std::cout << "viewx:" << view.getViewport().left << " viewy:" << view.getViewport().top << std::endl;
-
+template <class name>
+void new_enemy(std::vector<std::unique_ptr<Enemy>> &enemies,const sf::Texture &texture,float x,float y){
+    auto temp_obj=std::make_unique<name>(texture);
+    temp_obj->setPosition(x,y);
+    enemies.emplace_back(std::move(temp_obj));
 }
 
 int main() {
@@ -69,7 +73,9 @@ int main() {
 
     std::vector<sf::Sprite> walls;
     std::vector<sf::Sprite> mob_spawns;
+    std::vector<std::unique_ptr<Enemy>> enemies;
     sf::Clock clock;
+    sf::Clock clock_enemy;
     sf::View view1(sf::FloatRect(0.f, 0.f, window.getSize().x, window.getSize().y));
 
     //Load textures
@@ -147,22 +153,20 @@ int main() {
 
 
     // create some shapes
-        //Character
+    //Character
     auto character=std::make_unique<Character>(texture_character);
     character->setPosition(window_x/2-character->getGlobalBounds().width/2,window_y/2);
-        //Fire
+    //Fire
     Fire fire(texture_fire0,texture_fire1,texture_fire2,texture_fire3);
     fire.setPosition(0,800);
     fire.scale(3.f,3.f);
     fire.setTextureRect(sf::IntRect(0,0,2000.f/3.f,20));
-        //Text
+    //Text
     sf::Text text;
     text.setFont(font);
     text.setCharacterSize(250);
-    Fly fly(texture_fly);
-
+    new_enemy<Fly>(enemies,texture_fly,100.f,600.f);
     // run the program as long as the window is open
-
     while (window.isOpen()) {
         //Przegrana
 
@@ -205,7 +209,7 @@ int main() {
 
 
         }
-        //Gravitation
+        //Gravitation +animations
 
         character->set_ground_false();
         for(const auto &item:walls){
@@ -223,14 +227,13 @@ int main() {
 
         }
         fire.animate();
+        for(auto &item:enemies){
+            item->catch_character(elapsed,character->getGlobalBounds());
+            item->animate();
+        }
 
-        fly.animate();
         //window manipulation
-       CheckView(window,view1,fire);
-       //fly.setPosition(window.getView().getCenter().x-window.getView().getSize().x/2,window.getView().getCenter().y-window.getView().getSize().y/2);
-        //window.setView(view1);
-        fly.catch_character(elapsed,character->getGlobalBounds());
-
+        CheckView(window,view1,fire);
         window.clear(sf::Color::Black);
 
 
@@ -241,7 +244,9 @@ int main() {
         for(const auto&item:mob_spawns){
             window.draw(item);
         }
-        window.draw(fly);
+        for(const auto&item:enemies){
+            window.draw(*item);
+        }
         window.draw(fire);
         window.draw(*character);
         // end the current frame
