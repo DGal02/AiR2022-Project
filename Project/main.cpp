@@ -85,6 +85,7 @@ int main() {
     sf::Clock clock;
     sf::Clock clock_enemy;
     sf::View view1(sf::FloatRect(0.f, 0.f, window.getSize().x, window.getSize().y));
+    bool first_while=true;
 
     //Load textures
     sf::Texture texture;
@@ -139,6 +140,12 @@ int main() {
     {return -1;}
     sf::Sound sound(buffer);
 
+    sf::SoundBuffer gun_s;
+    if(!gun_s.loadFromFile("piu.wav")){
+        return 1;
+    }
+    sf::Sound gun_sound(gun_s);
+
 
     //Create Mob Resps
     Create_mob_resp(mob_spawns,texture_mob_resp);
@@ -162,11 +169,6 @@ int main() {
 
 
 
-
-
-
-
-    // create some shapes
     //Character
     auto character=std::make_unique<Character>(texture_character);
     character->setPosition(window_x/2-character->getGlobalBounds().width/2,window_y/2);
@@ -184,7 +186,7 @@ int main() {
     text_hp.setFont(font);
     text_hp.setCharacterSize(25);
 
-    bool first_while=true;
+
     // run the program as long as the window is open
     while (window.isOpen()) {
         //Przegrana
@@ -203,8 +205,9 @@ int main() {
                     sf::Vector2i mouse_pos = sf::Mouse::getPosition(window);
                     mouse_pos.x+=get_left_view(window);
                     mouse_pos.y+=get_top_view(window);
-                    std::cout << "KLIK!" << std::endl;
+
                     bullets.emplace_back(std::make_unique<Bullet>(mouse_pos,character->getGlobalBounds()));
+                    gun_sound.play();
                 }
             }
         }
@@ -257,8 +260,9 @@ int main() {
             first_while=false;} else
         { character->gravitation(elapsed,view1);}
         character->jump(elapsed,view1);
-        if(character->getGlobalBounds().top+character->getGlobalBounds().height>800){
-            character->reduce_life();
+        if(character->getGlobalBounds().intersects(fire.getGlobalBounds())){
+            character->reduce_life(sound);
+
 
         }
         fire.animate();
@@ -278,24 +282,31 @@ int main() {
         for(auto it1=bullets.begin();it1!=bullets.end();it1++){
 
             for(auto it2=enemies.begin();it2!=enemies.end();it2++){
+                    if((*it1)->getGlobalBounds().intersects((*it2)->getGlobalBounds())){
+                        enemies.erase(it2);
+                        it2--;
+                        bullets.erase(it1);
+                        it1--;
+                        break;
+                    }
+
 
             }
 
         }
         for(auto it=bullets.begin();it!=bullets.end();it++){
-            Bullet *bullet = dynamic_cast<Bullet *>(it->get());
-            if (bullet != nullptr) { // cast successful
 
-                if(bullet->check_border()){
+
+                if((*it)->check_border()){
                     bullets.erase(it);
                     it--;
-                    std::cout << "usnieto!" << std::endl;
+
 
                 }
-            }
+
         }
         //New enemy
-        if(clock_enemy.getElapsedTime().asSeconds()>=5.0){
+        if(clock_enemy.getElapsedTime().asSeconds()>=1.0){
             clock_enemy.restart();
             int random_number=rand()%3;
             switch(random_number){
@@ -309,12 +320,18 @@ int main() {
             case 2:
                 new_enemy<Fly>(enemies,texture_fly,mob_spawns[random_number].getGlobalBounds().left+mob_spawns[random_number].getGlobalBounds().width/2, mob_spawns[random_number].getGlobalBounds().top+mob_spawns[random_number].getGlobalBounds().height/2);;
                 break;
-            default:
-                std::cout << "something is wrong!" << random_number << std::endl;
+
+
             }
         }
         //window manipulation
         CheckView(window,view1,fire);
+        //GUI
+        std::string text_to_draw="HP:";
+        text_to_draw+=std::to_string(character->get_hp());
+        text_hp.setString(text_to_draw);
+        text_hp.setPosition(get_left_view(window),get_top_view(window));
+        //Draw
         window.clear(sf::Color::Black);
 
 
@@ -331,6 +348,7 @@ int main() {
         for(const auto&item:enemies){
             window.draw(*item);
         }
+        window.draw(text_hp);
         window.draw(fire);
         window.draw(*character);
         // end the current frame

@@ -105,8 +105,9 @@ void Character::jump(const sf::Time &elapsed,sf::View &view){
     view.move(0,-elapsed.asSeconds()*speed_gravitation*3);
     va_gravitation=0;
 }
-void Character::reduce_life(int x){
+void Character::reduce_life(sf::Sound &sound,int x){
     hp-=x;
+    sound.play();
 }
 int Character::get_hp(){
     return hp;

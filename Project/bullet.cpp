@@ -3,10 +3,10 @@
 Bullet::Bullet(const sf::Vector2i &vectori,const sf::FloatRect &bounds)
 {
     custom_bounds=sf::FloatRect(0.f,-300.f,2000.f,1100.f);
-    std::cout << vectori.x << " " << vectori.y << " " << bounds.left << " " << bounds.height << std::endl;
     setPosition(bounds.left,bounds.top);
     setFillColor(sf::Color::Red);
     setRadius(20);
+
     scalar_speed=800;
    // float a=bounds.top-getGlobalBounds().top;
     float a=-(bounds.top+bounds.height/2 -vectori.y);
@@ -24,6 +24,9 @@ Bullet::Bullet(const sf::Vector2i &vectori,const sf::FloatRect &bounds)
 }
 void Bullet::bullet_move(const sf::Time &elapsed){
     move(speed_x*elapsed.asSeconds(),speed_y*elapsed.asSeconds());
+
+
+
 }
 bool Bullet::check_border(){
     sf::FloatRect rectangle_bounds=this->getGlobalBounds();

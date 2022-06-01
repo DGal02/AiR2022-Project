@@ -27,7 +27,7 @@ public:
     void check_right(const sf::Sprite &wall,const sf::Time &elapsed);
     void set_jump();
     void jump(const sf::Time &elapsed, sf::View &view);
-    void reduce_life(int x=1);
+    void reduce_life(sf::Sound &sound,int x=1);
     sf::Clock* r_jump_clock();
     int get_hp(); 
     bool on_ground();
