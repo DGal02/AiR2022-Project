@@ -1,5 +1,5 @@
 TEMPLATE = app
-CONFIG += console c++15
+CONFIG += console c++19
 CONFIG -= app_bundle
 CONFIG -= qt
 INCLUDEPATH += "C:/SFML-2.5.1/include"
@@ -10,6 +10,7 @@ CONFIG(debug, debug|release){
     LIBS += -lsfml-audio -lsfml-graphics -lsfml-network -lsfml-system -lsfml-window
 }
 SOURCES += \
+        bullet.cpp \
         character.cpp \
         enemy.cpp \
         fire.cpp \
@@ -17,6 +18,7 @@ SOURCES += \
         main.cpp
 
 HEADERS += \
+    bullet.h \
     character.h \
     enemy.h \
     fire.h \

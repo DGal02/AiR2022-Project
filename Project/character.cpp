@@ -3,8 +3,8 @@
 Character::Character(const sf::Texture &text)
 {
     setTexture(text);
-     on_ground_left=false;
-     on_ground_right=false;
+     on_ground_left=true;
+     on_ground_right=true;
      speed_x=500;
      speed_gravitation=200; //Wczytanie
      jump_clock=NULL;

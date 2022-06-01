@@ -7,6 +7,7 @@
 #include "fire.h"
 #include "enemy.h"
 #include "fly.h"
+#include "bullet.h"
 void Create_wall(std::vector<sf::Sprite> &walls, const sf::Texture &texture,int x,int y){
     sf::Sprite wall;
     wall.setTexture(texture);
@@ -62,7 +63,12 @@ void new_enemy(std::vector<std::unique_ptr<Enemy>> &enemies,const sf::Texture &t
     temp_obj->setPosition(x,y);
     enemies.emplace_back(std::move(temp_obj));
 }
-
+float get_left_view(const sf::RenderWindow &window){
+    return (window.getView().getCenter().x-window.getView().getSize().x/2);
+}
+float get_top_view(const sf::RenderWindow &window){
+    return (window.getView().getCenter().y-window.getView().getSize().y/2);
+}
 int main() {
 
     // Initialize variables
@@ -75,6 +81,7 @@ int main() {
     std::vector<sf::Sprite> walls;
     std::vector<sf::Sprite> mob_spawns;
     std::vector<std::unique_ptr<Enemy>> enemies;
+    std::vector<std::unique_ptr<Bullet>> bullets;
     sf::Clock clock;
     sf::Clock clock_enemy;
     sf::View view1(sf::FloatRect(0.f, 0.f, window.getSize().x, window.getSize().y));
@@ -129,7 +136,7 @@ int main() {
 
     sf::SoundBuffer buffer;
     if (!buffer.loadFromFile("uderzenie2.wav"))
-            {return -1;}
+    {return -1;}
     sf::Sound sound(buffer);
 
 
@@ -174,13 +181,16 @@ int main() {
     text.setCharacterSize(250);
 
     sf::Text text_hp;
-    text.setFont(font);
-    text.setCharacterSize(25);
-    new_enemy<Fly>(enemies,texture_fly,100.f,600.f);
+    text_hp.setFont(font);
+    text_hp.setCharacterSize(25);
+
+    bool first_while=true;
     // run the program as long as the window is open
     while (window.isOpen()) {
         //Przegrana
-
+        if(clock.getElapsedTime().asSeconds()>=1){
+            clock.restart();
+        }
         // check all the window's events that were triggered since the last iteration of the loop
         sf::Event event;
         sf::Time elapsed=clock.restart();
@@ -191,9 +201,10 @@ int main() {
             if (event.type == sf::Event::MouseButtonPressed) {
                 if(event.mouseButton.button == sf::Mouse::Left) {
                     sf::Vector2i mouse_pos = sf::Mouse::getPosition(window);
-
+                    mouse_pos.x+=get_left_view(window);
+                    mouse_pos.y+=get_top_view(window);
                     std::cout << "KLIK!" << std::endl;
-
+                    bullets.emplace_back(std::make_unique<Bullet>(mouse_pos,character->getGlobalBounds()));
                 }
             }
         }
@@ -242,7 +253,9 @@ int main() {
             character->check_right(item,elapsed);
 
         }
-        character->gravitation(elapsed,view1);
+        if(first_while){
+            first_while=false;} else
+        { character->gravitation(elapsed,view1);}
         character->jump(elapsed,view1);
         if(character->getGlobalBounds().top+character->getGlobalBounds().height>800){
             character->reduce_life();
@@ -253,10 +266,51 @@ int main() {
             item->catch_character(elapsed,character->getGlobalBounds());
             item->animate();
         }
+        for(auto &item:bullets) {
+            item->bullet_move(elapsed);
+        }
         //Collision check
         for(const auto &item:enemies){
             if(character->getGlobalBounds().intersects(item->getGlobalBounds())){
                 character->collision(sound);
+            }
+        }
+        for(auto it1=bullets.begin();it1!=bullets.end();it1++){
+
+            for(auto it2=enemies.begin();it2!=enemies.end();it2++){
+
+            }
+
+        }
+        for(auto it=bullets.begin();it!=bullets.end();it++){
+            Bullet *bullet = dynamic_cast<Bullet *>(it->get());
+            if (bullet != nullptr) { // cast successful
+
+                if(bullet->check_border()){
+                    bullets.erase(it);
+                    it--;
+                    std::cout << "usnieto!" << std::endl;
+
+                }
+            }
+        }
+        //New enemy
+        if(clock_enemy.getElapsedTime().asSeconds()>=5.0){
+            clock_enemy.restart();
+            int random_number=rand()%3;
+            switch(random_number){
+            case 0:
+                new_enemy<Fly>(enemies,texture_fly,mob_spawns[random_number].getGlobalBounds().left+mob_spawns[random_number].getGlobalBounds().width/2, mob_spawns[random_number].getGlobalBounds().top+mob_spawns[random_number].getGlobalBounds().height/2);
+                break;
+
+            case 1:
+                new_enemy<Fly>(enemies,texture_fly,mob_spawns[random_number].getGlobalBounds().left+mob_spawns[random_number].getGlobalBounds().width/2, mob_spawns[random_number].getGlobalBounds().top+mob_spawns[random_number].getGlobalBounds().height/2);
+                break;
+            case 2:
+                new_enemy<Fly>(enemies,texture_fly,mob_spawns[random_number].getGlobalBounds().left+mob_spawns[random_number].getGlobalBounds().width/2, mob_spawns[random_number].getGlobalBounds().top+mob_spawns[random_number].getGlobalBounds().height/2);;
+                break;
+            default:
+                std::cout << "something is wrong!" << random_number << std::endl;
             }
         }
         //window manipulation
@@ -271,6 +325,9 @@ int main() {
         for(const auto&item:mob_spawns){
             window.draw(item);
         }
+        for(const auto&item:bullets){
+            window.draw(*item);
+        }
         for(const auto&item:enemies){
             window.draw(*item);
         }
@@ -279,6 +336,5 @@ int main() {
         // end the current frame
         window.display();
     }
-
     return 0;
 }
