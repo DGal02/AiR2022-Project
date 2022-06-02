@@ -143,3 +143,6 @@ void Character::collision(sf::Sound &sound){
 
     }
 }
+int Character::get_points(){
+    return points;
+}

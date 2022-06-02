@@ -28,13 +28,15 @@ public:
     void set_jump();
     void jump(const sf::Time &elapsed, sf::View &view);
     void reduce_life(sf::Sound &sound,int x=1);
+    void add_points(int x=1);
+    void collision(sf::Sound &sound);
     sf::Clock* r_jump_clock();
     int get_hp(); 
+    int get_points();
     bool on_ground();
     bool przegrana();
     bool wygrana();
-    void add_points(int x=1);
-    void collision(sf::Sound &sound);
+
 };
 
 

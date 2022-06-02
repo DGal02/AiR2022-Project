@@ -8,6 +8,7 @@
 #include "enemy.h"
 #include "fly.h"
 #include "bullet.h"
+#include "boss.h"
 void Create_wall(std::vector<sf::Sprite> &walls, const sf::Texture &texture,int x,int y){
     sf::Sprite wall;
     wall.setTexture(texture);
@@ -84,6 +85,7 @@ int main() {
     std::vector<std::unique_ptr<Bullet>> bullets;
     sf::Clock clock;
     sf::Clock clock_enemy;
+    sf::Clock clock_gun;
     sf::View view1(sf::FloatRect(0.f, 0.f, window.getSize().x, window.getSize().y));
     bool first_while=true;
 
@@ -130,6 +132,9 @@ int main() {
     sf::Texture texture_fly;
     if(!texture_fly.loadFromFile("textures/fly.png")) {return 1;}
 
+    sf::Texture texture_boss;
+    if(!texture_boss.loadFromFile("textures/boss.png")) {return 1;}
+
     sf::Font font;
     // Load it from a file
     if (!font.loadFromFile("czcionka.ttf")) { return 1; }
@@ -172,6 +177,9 @@ int main() {
     //Character
     auto character=std::make_unique<Character>(texture_character);
     character->setPosition(window_x/2-character->getGlobalBounds().width/2,window_y/2);
+
+    //Boss
+    auto boss=std::make_unique<Boss>(texture_boss);
     //Fire
     Fire fire(texture_fire0,texture_fire1,texture_fire2,texture_fire3);
     fire.setPosition(0,800);
@@ -201,7 +209,8 @@ int main() {
             if (event.type == sf::Event::Closed)
                 window.close();
             if (event.type == sf::Event::MouseButtonPressed) {
-                if(event.mouseButton.button == sf::Mouse::Left) {
+                if(event.mouseButton.button == sf::Mouse::Left &&clock_gun.getElapsedTime().asSeconds()>=0.3) {
+                    clock_gun.restart();
                     sf::Vector2i mouse_pos = sf::Mouse::getPosition(window);
                     mouse_pos.x+=get_left_view(window);
                     mouse_pos.y+=get_top_view(window);
@@ -246,7 +255,7 @@ int main() {
 
         }
         //Gravitation +animations
-
+        boss->boss_move(elapsed);
         character->set_ground_false();
         for(const auto &item:walls){
             if(character->on_ground()){
@@ -260,11 +269,6 @@ int main() {
             first_while=false;} else
         { character->gravitation(elapsed,view1);}
         character->jump(elapsed,view1);
-        if(character->getGlobalBounds().intersects(fire.getGlobalBounds())){
-            character->reduce_life(sound);
-
-
-        }
         fire.animate();
         for(auto &item:enemies){
             item->catch_character(elapsed,character->getGlobalBounds());
@@ -274,37 +278,52 @@ int main() {
             item->bullet_move(elapsed);
         }
         //Collision check
+
         for(const auto &item:enemies){
             if(character->getGlobalBounds().intersects(item->getGlobalBounds())){
                 character->collision(sound);
             }
         }
+
         for(auto it1=bullets.begin();it1!=bullets.end();it1++){
 
             for(auto it2=enemies.begin();it2!=enemies.end();it2++){
-                    if((*it1)->getGlobalBounds().intersects((*it2)->getGlobalBounds())){
+                if((*it1)->getGlobalBounds().intersects((*it2)->getGlobalBounds())){
+                    (*it2)->reduce_life();
+                    if((*it2)->get_hp()<=0){
                         enemies.erase(it2);
                         it2--;
-                        bullets.erase(it1);
-                        it1--;
-                        break;
+                        character->add_points();
                     }
+
+                    bullets.erase(it1);
+                    it1--;
+                    break;
+                }
 
 
             }
 
         }
+
         for(auto it=bullets.begin();it!=bullets.end();it++){
 
 
-                if((*it)->check_border()){
-                    bullets.erase(it);
-                    it--;
+            if((*it)->check_border()){
+                bullets.erase(it);
+                it--;
 
 
-                }
+            }
 
         }
+
+        if(character->getGlobalBounds().intersects(fire.getGlobalBounds())){
+            character->reduce_life(sound,character->get_hp());
+
+
+        }
+
         //New enemy
         if(clock_enemy.getElapsedTime().asSeconds()>=1.0){
             clock_enemy.restart();
@@ -324,11 +343,13 @@ int main() {
 
             }
         }
-        //window manipulation
+        //view manipulation
         CheckView(window,view1,fire);
         //GUI
-        std::string text_to_draw="HP:";
+        std::string text_to_draw="HP: ";
         text_to_draw+=std::to_string(character->get_hp());
+        text_to_draw+=" POINTS: ";
+        text_to_draw+=std::to_string(character->get_points());
         text_hp.setString(text_to_draw);
         text_hp.setPosition(get_left_view(window),get_top_view(window));
         //Draw
@@ -350,6 +371,7 @@ int main() {
         }
         window.draw(text_hp);
         window.draw(fire);
+        window.draw(*boss);
         window.draw(*character);
         // end the current frame
         window.display();
