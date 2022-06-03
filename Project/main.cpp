@@ -9,6 +9,7 @@
 #include "fly.h"
 #include "bullet.h"
 #include "boss.h"
+#include "ghost.h"
 void Create_wall(std::vector<sf::Sprite> &walls, const sf::Texture &texture,int x,int y){
     sf::Sprite wall;
     wall.setTexture(texture);
@@ -134,6 +135,9 @@ int main() {
 
     sf::Texture texture_boss;
     if(!texture_boss.loadFromFile("textures/boss.png")) {return 1;}
+
+    sf::Texture texture_ghost;
+    if(!texture_ghost.loadFromFile("textures/duch.png")) {return 1;}
 
     sf::Font font;
     // Load it from a file
@@ -330,7 +334,7 @@ int main() {
             int random_number=rand()%3;
             switch(random_number){
             case 0:
-                new_enemy<Fly>(enemies,texture_fly,mob_spawns[random_number].getGlobalBounds().left+mob_spawns[random_number].getGlobalBounds().width/2, mob_spawns[random_number].getGlobalBounds().top+mob_spawns[random_number].getGlobalBounds().height/2);
+                new_enemy<Ghost>(enemies,texture_ghost,mob_spawns[random_number].getGlobalBounds().left+mob_spawns[random_number].getGlobalBounds().width/2, mob_spawns[random_number].getGlobalBounds().top+mob_spawns[random_number].getGlobalBounds().height/2);
                 break;
 
             case 1:

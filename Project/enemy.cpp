@@ -17,6 +17,22 @@ void Enemy::catch_character(const sf::Time &elapsed, const sf::FloatRect &bounds
     }
     float sina=a/c;
     float cosa=b/c;
+
+
+
+    float moveX=elapsed.asSeconds()*scalar_speed*cosa;
+    float moveY=elapsed.asSeconds()*scalar_speed*sina;
+    if(std::fabs(a)<2.f){
+        moveX=0;
+    }
+    if(std::fabs(b)<2.f){
+        moveY=0;
+    }
+    move(moveX,moveY);
+    set_rectangle_hp();
+    if(std::fabs(a)<3||std::fabs(b)<3){
+        return;
+    }
     if(cosa<0&&!turned_right&&(turn_clock.getElapsedTime().asSeconds()>=0.3||first_turn==true)){
         turn_clock.restart();
         float position_Y=getGlobalBounds().top;
@@ -36,10 +52,6 @@ void Enemy::catch_character(const sf::Time &elapsed, const sf::FloatRect &bounds
         first_turn=false;
 
     }
-    float moveX=elapsed.asSeconds()*scalar_speed*cosa;
-    float moveY=elapsed.asSeconds()*scalar_speed*sina;
-    move(moveX,moveY);
-    set_rectangle_hp();
 
 }
 void Enemy::animate(){

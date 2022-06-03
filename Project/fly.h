@@ -1,5 +1,4 @@
-#ifndef FLY_H
-#define FLY_H
+#pragma once
 
 #include "enemy.h"
 
@@ -13,4 +12,4 @@ public:
     void animate();
 };
 
-#endif // FLY_H
+

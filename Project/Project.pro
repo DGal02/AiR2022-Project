@@ -16,6 +16,7 @@ SOURCES += \
         enemy.cpp \
         fire.cpp \
         fly.cpp \
+        ghost.cpp \
         main.cpp
 
 HEADERS += \
@@ -24,4 +25,5 @@ HEADERS += \
     character.h \
     enemy.h \
     fire.h \
-    fly.h
+    fly.h \
+    ghost.h
