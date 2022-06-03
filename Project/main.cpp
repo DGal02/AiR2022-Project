@@ -350,6 +350,10 @@ int main() {
         text_to_draw+=std::to_string(character->get_hp());
         text_to_draw+=" POINTS: ";
         text_to_draw+=std::to_string(character->get_points());
+        if(character->immortal()){
+            text_to_draw+=" ";
+            text_to_draw+="IMMORTAL";
+        }
         text_hp.setString(text_to_draw);
         text_hp.setPosition(get_left_view(window),get_top_view(window));
         //Draw
@@ -367,6 +371,7 @@ int main() {
             window.draw(*item);
         }
         for(const auto&item:enemies){
+            window.draw(item->get_rectangle_hp());
             window.draw(*item);
         }
         window.draw(text_hp);

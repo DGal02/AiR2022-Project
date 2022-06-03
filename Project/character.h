@@ -16,6 +16,7 @@ private:
     int points;
     int const_a_gravitation;
 
+
 public:
     Character(const sf::Texture &texture);
     Character();
@@ -36,6 +37,7 @@ public:
     bool on_ground();
     bool przegrana();
     bool wygrana();
+    bool immortal();
 
 };
 

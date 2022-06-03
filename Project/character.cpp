@@ -146,3 +146,14 @@ void Character::collision(sf::Sound &sound){
 int Character::get_points(){
     return points;
 }
+bool Character::immortal(){
+    if(collision_clock==NULL){
+        return false;
+    } else {
+        if(collision_clock->getElapsedTime().asSeconds()<=5){
+            return true;
+        }
+        return false;
+    }
+
+}
