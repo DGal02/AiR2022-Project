@@ -30,7 +30,7 @@ void Enemy::catch_character(const sf::Time &elapsed, const sf::FloatRect &bounds
     }
     move(moveX,moveY);
     set_rectangle_hp();
-    if(std::fabs(a)<3||std::fabs(b)<3){
+    if(std::fabs(a)<2.f||std::fabs(b)<2.f){
         return;
     }
     if(cosa<0&&!turned_right&&(turn_clock.getElapsedTime().asSeconds()>=0.3||first_turn==true)){

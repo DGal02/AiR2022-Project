@@ -76,7 +76,7 @@ int main() {
     // Initialize variables
     int window_x=1600;
     int window_y=800;
-    sf::RenderWindow window(sf::VideoMode(window_x, window_y), "Jump or Die");
+    sf::RenderWindow window(sf::VideoMode(window_x, window_y), "Jump or Die",sf::Style::Titlebar | sf::Style::Close);
     window.setVerticalSyncEnabled(true);
     window.setFramerateLimit(144);
 
