@@ -7,6 +7,6 @@ hp=1;
 }
 void Ghost::animate(){
     if(rand()%100+1==1){
-        scalar_speed+=10;
+        scalar_speed+=25;
     }
 }

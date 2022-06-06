@@ -10,6 +10,51 @@
 #include "bullet.h"
 #include "boss.h"
 #include "ghost.h"
+void title_screen(){
+    sf::Font bloody;
+    if (!bloody.loadFromFile("fonts/BLOODY.ttf")) { return; }
+    sf::Text title;
+    title.setFont(bloody);
+    title.setCharacterSize(55);
+    title.setString("JUMP OR DIE");
+    title.setPosition(400-title.getGlobalBounds().width/2.f,100);
+    sf::RectangleShape outline_title;
+
+    sf::Text start;
+    start.setFont(bloody);
+    start.setCharacterSize(35);
+    start.setString("START");
+    start.setPosition(400-start.getGlobalBounds().width/2,300);
+    outline_title.setPosition(start.getGlobalBounds().left-2,start.getGlobalBounds().top-2);
+    outline_title.setSize(sf::Vector2f(start.getGlobalBounds().width+4,start.getGlobalBounds().height+4));
+    outline_title.setFillColor(sf::Color::Black);
+    outline_title.setOutlineColor(sf::Color::White);
+    outline_title.setOutlineThickness(3);
+    sf::RenderWindow window(sf::VideoMode(800, 600), "My window");
+
+
+
+
+
+    while (window.isOpen()) {
+
+        sf::Event event;
+        while (window.pollEvent(event)) {
+            // "close requested" event: we close the window
+            if (event.type == sf::Event::Closed)
+                window.close();
+        }
+
+
+        window.clear(sf::Color::Black);
+        window.draw(outline_title);
+        window.draw(title);
+        window.draw(start);
+
+
+        window.display();
+    }
+}
 void Create_wall(std::vector<sf::Sprite> &walls, const sf::Texture &texture,int x,int y){
     sf::Sprite wall;
     wall.setTexture(texture);
@@ -72,7 +117,7 @@ float get_top_view(const sf::RenderWindow &window){
     return (window.getView().getCenter().y-window.getView().getSize().y/2);
 }
 int main() {
-
+    title_screen();
     // Initialize variables
     int window_x=1600;
     int window_y=800;
@@ -140,7 +185,6 @@ int main() {
     if(!texture_ghost.loadFromFile("textures/duch.png")) {return 1;}
 
     sf::Font font;
-    // Load it from a file
     if (!font.loadFromFile("czcionka.ttf")) { return 1; }
 
 
@@ -201,17 +245,25 @@ int main() {
 
     // run the program as long as the window is open
     while (window.isOpen()) {
-        //Przegrana
+
         if(clock.getElapsedTime().asSeconds()>=1){
             clock.restart();
         }
         // check all the window's events that were triggered since the last iteration of the loop
         sf::Event event;
         sf::Time elapsed=clock.restart();
+        if(first_while){
+            first_while=false;
+            continue;
+        }
         while (window.pollEvent(event)) {
             // "close requested" event: we close the window
             if (event.type == sf::Event::Closed)
                 window.close();
+            if(character->przegrana()||character->wygrana()){
+                break;
+            }
+            //Shoot
             if (event.type == sf::Event::MouseButtonPressed) {
                 if(event.mouseButton.button == sf::Mouse::Left &&clock_gun.getElapsedTime().asSeconds()>=0.3) {
                     clock_gun.restart();
@@ -269,9 +321,7 @@ int main() {
             character->check_right(item,elapsed);
 
         }
-        if(first_while){
-            first_while=false;} else
-        { character->gravitation(elapsed,view1);}
+         character->gravitation(elapsed,view1);
         character->jump(elapsed,view1);
         fire.animate();
         for(auto &item:enemies){
