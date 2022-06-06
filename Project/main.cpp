@@ -13,27 +13,33 @@
 void title_screen(){
     sf::Font bloody;
     if (!bloody.loadFromFile("fonts/BLOODY.ttf")) { return; }
+
     sf::Text title;
     title.setFont(bloody);
     title.setCharacterSize(55);
     title.setString("JUMP OR DIE");
     title.setPosition(400-title.getGlobalBounds().width/2.f,100);
-    sf::RectangleShape outline_title;
+
 
     sf::Text start;
     start.setFont(bloody);
     start.setCharacterSize(35);
     start.setString("START");
     start.setPosition(400-start.getGlobalBounds().width/2,300);
-    outline_title.setPosition(start.getGlobalBounds().left-2,start.getGlobalBounds().top-2);
-    outline_title.setSize(sf::Vector2f(start.getGlobalBounds().width+4,start.getGlobalBounds().height+4));
-    outline_title.setFillColor(sf::Color::Black);
-    outline_title.setOutlineColor(sf::Color::White);
-    outline_title.setOutlineThickness(3);
-    sf::RenderWindow window(sf::VideoMode(800, 600), "My window");
 
+    sf::RectangleShape outline_start;
+    outline_start.setPosition(start.getGlobalBounds().left-2,start.getGlobalBounds().top-2);
+    outline_start.setSize(sf::Vector2f(start.getGlobalBounds().width+4,start.getGlobalBounds().height+4));
+    outline_start.setFillColor(sf::Color::Black);
+    outline_start.setOutlineColor(sf::Color::Red);
+    outline_start.setOutlineThickness(3);
 
+    sf::RenderWindow window(sf::VideoMode(800, 600), "My window",sf::Style::Titlebar | sf::Style::Close);
 
+    sf::Cursor cursor;
+    if (cursor.loadFromSystem(sf::Cursor::Hand))
+        window.setMouseCursor(cursor);
+    sf::Cursor::Type cursor_type=sf::Cursor::Hand;
 
 
     while (window.isOpen()) {
@@ -43,11 +49,49 @@ void title_screen(){
             // "close requested" event: we close the window
             if (event.type == sf::Event::Closed)
                 window.close();
+            if (event.type == sf::Event::MouseButtonPressed) {
+                //Left click event
+                if(event.mouseButton.button == sf::Mouse::Left) {
+                    sf::Vector2i mouse_pos = sf::Mouse::getPosition(window);
+                    sf::FloatRect rectangle_bounds=outline_start.getGlobalBounds();
+
+                    if(( (rectangle_bounds.left<=mouse_pos.x) && ( (rectangle_bounds.left+rectangle_bounds.width) >=mouse_pos.x )) &&
+                            ( (rectangle_bounds.top<=mouse_pos.y) && ( (rectangle_bounds.top + rectangle_bounds.height) >=mouse_pos.y )))
+                    {
+                        window.close();
+                    }
+                }
+            }
+        }
+        //Check if cursor in Start button
+        sf::Vector2i mouse_pos = sf::Mouse::getPosition(window);
+        sf::FloatRect rectangle_bounds=outline_start.getGlobalBounds();
+
+        if(( (rectangle_bounds.left<=mouse_pos.x) && ( (rectangle_bounds.left+rectangle_bounds.width) >=mouse_pos.x )) &&
+                ( (rectangle_bounds.top<=mouse_pos.y) && ( (rectangle_bounds.top + rectangle_bounds.height) >=mouse_pos.y )))
+        {
+            outline_start.setOutlineColor(sf::Color::Green);
+            if(cursor_type!=sf::Cursor::Hand){
+                if (cursor.loadFromSystem(sf::Cursor::Hand)){
+
+                    window.setMouseCursor(cursor);
+                    cursor_type=sf::Cursor::Hand;
+                }
+            }
+
+        } else {
+            outline_start.setOutlineColor(sf::Color::Red);
+            if(cursor_type!=sf::Cursor::Arrow){
+                if (cursor.loadFromSystem(sf::Cursor::Arrow)){
+
+                    window.setMouseCursor(cursor);
+                    cursor_type=sf::Cursor::Arrow;
+                }
+            }
         }
 
-
         window.clear(sf::Color::Black);
-        window.draw(outline_title);
+        window.draw(outline_start);
         window.draw(title);
         window.draw(start);
 
@@ -321,7 +365,7 @@ int main() {
             character->check_right(item,elapsed);
 
         }
-         character->gravitation(elapsed,view1);
+        character->gravitation(elapsed,view1);
         character->jump(elapsed,view1);
         fire.animate();
         for(auto &item:enemies){
