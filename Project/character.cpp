@@ -12,7 +12,8 @@ Character::Character(const sf::Texture &text)
      va_gravitation=0;
      hp=5; //Wczytanie
      points=0;
-     const_a_gravitation=300;
+     const_a_gravitation=400;
+     killed_boss=false;
 }
 Character::~Character(){
     delete jump_clock;
@@ -119,7 +120,7 @@ bool Character::przegrana(){
     return false;
 }
 bool Character::wygrana(){
-    if(points>=200){
+    if(points>=20&&killed_boss){
         return true;
     }
     return false;
@@ -156,4 +157,10 @@ bool Character::immortal(){
         return false;
     }
 
+}
+void Character::kill_boss(){
+    killed_boss=true;
+}
+bool Character::get_killed_boss(){
+    return killed_boss;
 }

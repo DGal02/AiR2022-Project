@@ -160,8 +160,8 @@ float get_left_view(const sf::RenderWindow &window){
 float get_top_view(const sf::RenderWindow &window){
     return (window.getView().getCenter().y-window.getView().getSize().y/2);
 }
-int main() {
-    title_screen();
+void main_game(){
+
     // Initialize variables
     int window_x=1600;
     int window_y=800;
@@ -182,7 +182,7 @@ int main() {
     //Load textures
     sf::Texture texture;
     if (!texture.loadFromFile("textures/space.png")) {
-        return 1;
+        return ;
     }
     texture.setRepeated(true);
     sf::Sprite space;
@@ -193,53 +193,53 @@ int main() {
     space.setPosition(0,-300);
 
 
-    if(!texture_character.loadFromFile("textures/guy.png")) { return 1; }
+    if(!texture_character.loadFromFile("textures/guy.png")) { return ; }
     sf::Texture texture_wall;
     if (!texture_wall.loadFromFile("textures/wall.png")) {
-        return 1;
+        return ;
     }
     texture_wall.setRepeated(true);
 
     sf::Texture texture_mob_resp;
-    if(!texture_mob_resp.loadFromFile("textures/mob_resp.png")) {return 1;}
+    if(!texture_mob_resp.loadFromFile("textures/mob_resp.png")) {return;}
 
     sf::Texture texture_fire0;
-    if(!texture_fire0.loadFromFile("textures/fire0.gif")) {return 1;}
+    if(!texture_fire0.loadFromFile("textures/fire0.gif")) {return ;}
     texture_fire0.setRepeated(true);
 
     sf::Texture texture_fire1;
-    if(!texture_fire1.loadFromFile("textures/fire1.gif")) {return 1;}
+    if(!texture_fire1.loadFromFile("textures/fire1.gif")) {return ;}
     texture_fire1.setRepeated(true);
 
     sf::Texture texture_fire2;
-    if(!texture_fire2.loadFromFile("textures/fire2.gif")) {return 1;}
+    if(!texture_fire2.loadFromFile("textures/fire2.gif")) {return ;}
     texture_fire2.setRepeated(true);
 
     sf::Texture texture_fire3;
-    if(!texture_fire3.loadFromFile("textures/fire3.gif")) {return 1;}
+    if(!texture_fire3.loadFromFile("textures/fire3.gif")) {return ;}
     texture_fire3.setRepeated(true);
 
     sf::Texture texture_fly;
-    if(!texture_fly.loadFromFile("textures/fly.png")) {return 1;}
+    if(!texture_fly.loadFromFile("textures/fly.png")) {return ;}
 
     sf::Texture texture_boss;
-    if(!texture_boss.loadFromFile("textures/boss.png")) {return 1;}
+    if(!texture_boss.loadFromFile("textures/boss.png")) {return ;}
 
     sf::Texture texture_ghost;
-    if(!texture_ghost.loadFromFile("textures/duch.png")) {return 1;}
+    if(!texture_ghost.loadFromFile("textures/duch.png")) {return ;}
 
     sf::Font font;
-    if (!font.loadFromFile("czcionka.ttf")) { return 1; }
+    if (!font.loadFromFile("czcionka.ttf")) { return ; }
 
 
     sf::SoundBuffer buffer;
     if (!buffer.loadFromFile("uderzenie2.wav"))
-    {return -1;}
+    {return ;}
     sf::Sound sound(buffer);
 
     sf::SoundBuffer gun_s;
     if(!gun_s.loadFromFile("piu.wav")){
-        return 1;
+        return ;
     }
     sf::Sound gun_sound(gun_s);
 
@@ -271,7 +271,7 @@ int main() {
     character->setPosition(window_x/2-character->getGlobalBounds().width/2,window_y/2);
 
     //Boss
-    auto boss=std::make_unique<Boss>(texture_boss);
+    std::unique_ptr<Boss> boss;
     //Fire
     Fire fire(texture_fire0,texture_fire1,texture_fire2,texture_fire3);
     fire.setPosition(0,800);
@@ -329,6 +329,11 @@ int main() {
             Wygrana(window,text);
             continue;
         }
+        //Create boss
+        if(boss==nullptr&&character->get_points()>=2&&!character->get_killed_boss()){
+            boss=std::make_unique<Boss>(texture_boss,font);
+
+        }
         //Movement
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
@@ -354,8 +359,12 @@ int main() {
 
 
         }
+        //Create Boss
+
         //Gravitation +animations
-        boss->boss_move(elapsed);
+        if(boss!=nullptr){
+            boss->boss_move(elapsed);
+        }
         character->set_ground_false();
         for(const auto &item:walls){
             if(character->on_ground()){
@@ -382,6 +391,27 @@ int main() {
                 character->collision(sound);
             }
         }
+
+        if(boss!=nullptr){
+            if(character->getGlobalBounds().intersects(boss->getGlobalBounds())){
+                character->collision(sound);
+            }
+            for(auto it=bullets.begin();it!=bullets.end();it++){
+                if((*it)->getGlobalBounds().intersects(boss->getGlobalBounds())){
+                    boss->reduce_hp();
+
+                    bullets.erase(it);
+                    it--;
+                    if(boss->get_hp()<=0){
+                        character->kill_boss();
+                        boss.reset();
+                        break;
+                    }
+
+                }
+            }
+        }
+
 
         for(auto it1=bullets.begin();it1!=bullets.end();it1++){
 
@@ -454,6 +484,7 @@ int main() {
         }
         text_hp.setString(text_to_draw);
         text_hp.setPosition(get_left_view(window),get_top_view(window));
+
         //Draw
         window.clear(sf::Color::Black);
 
@@ -474,10 +505,20 @@ int main() {
         }
         window.draw(text_hp);
         window.draw(fire);
-        window.draw(*boss);
+        if(boss!=nullptr){
+            window.draw(boss->get_text_hp());
+            window.draw(*boss);
+        }
         window.draw(*character);
         // end the current frame
         window.display();
     }
+
+
+
+}
+int main() {
+    title_screen();
+    main_game();
     return 0;
 }

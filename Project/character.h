@@ -15,6 +15,7 @@ private:
     int hp;
     int points;
     int const_a_gravitation;
+    bool killed_boss;
 
 
 public:
@@ -31,6 +32,7 @@ public:
     void reduce_life(sf::Sound &sound,int x=1);
     void add_points(int x=1);
     void collision(sf::Sound &sound);
+    void kill_boss();
     sf::Clock* r_jump_clock();
     int get_hp(); 
     int get_points();
@@ -38,6 +40,7 @@ public:
     bool przegrana();
     bool wygrana();
     bool immortal();
+    bool get_killed_boss();
 
 };
 
