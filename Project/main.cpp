@@ -124,7 +124,8 @@ void Wygrana(sf::RenderWindow &window,sf::Text &text){
     window.draw(text);
     window.display();
 }
-void Przegrana(sf::RenderWindow &window,sf::Text &text){
+void Przegrana(sf::RenderWindow &window,sf::Text &text,sf::Sound &sound){
+    sound.stop();
     text.setString("PRZEGRANA!");
     text.setPosition(20,20);
     text.setFillColor(sf::Color::Red);
@@ -350,7 +351,7 @@ void main_game(){
         }
         //Victory/loss
         if(character->przegrana()){
-            Przegrana(window,text);
+            Przegrana(window,text,boss_sound);
             continue;
         }
         if(character->wygrana()){
@@ -526,7 +527,7 @@ void main_game(){
             boss=std::make_unique<Boss>(texture_boss,font);
 
             boss_sound.play();
-
+            boss_sound.setLoop(true);
         }
         //Double shot
         if(character->get_if_double_shot()){
