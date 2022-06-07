@@ -33,6 +33,7 @@ public:
     void add_points(int x=1);
     void collision(sf::Sound &sound);
     void kill_boss();
+    void add_hp(int x=1);
     sf::Clock* r_jump_clock();
     int get_hp(); 
     int get_points();

@@ -22,10 +22,10 @@ void Enemy::catch_character(const sf::Time &elapsed, const sf::FloatRect &bounds
 
     float moveX=elapsed.asSeconds()*scalar_speed*cosa;
     float moveY=elapsed.asSeconds()*scalar_speed*sina;
-    if(std::fabs(a)<2.f){
+    if(std::fabs(b)<2.f){
         moveX=0;
     }
-    if(std::fabs(b)<2.f){
+    if(std::fabs(a)<2.f){
         moveY=0;
     }
     move(moveX,moveY);

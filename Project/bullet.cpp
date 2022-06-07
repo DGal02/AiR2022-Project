@@ -6,7 +6,8 @@ Bullet::Bullet(const sf::Vector2i &vectori,const sf::FloatRect &bounds)
     setPosition(bounds.left,bounds.top);
     setFillColor(sf::Color::Red);
     setRadius(20);
-
+    speed_x=0;
+    speed_y=0;
     scalar_speed=800;
    // float a=bounds.top-getGlobalBounds().top;
     float a=-(bounds.top+bounds.height/2 -vectori.y);

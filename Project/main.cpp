@@ -10,6 +10,8 @@
 #include "bullet.h"
 #include "boss.h"
 #include "ghost.h"
+#include "potion.h"
+#include "health_potion.h"
 void title_screen(){
     sf::Font bloody;
     if (!bloody.loadFromFile("fonts/BLOODY.ttf")) { return; }
@@ -173,6 +175,8 @@ void main_game(){
     std::vector<sf::Sprite> mob_spawns;
     std::vector<std::unique_ptr<Enemy>> enemies;
     std::vector<std::unique_ptr<Bullet>> bullets;
+    std::vector<std::unique_ptr<Potion>> potions;
+    sf::Clock clock_hp_potion;
     sf::Clock clock;
     sf::Clock clock_enemy;
     sf::Clock clock_gun;
@@ -227,6 +231,9 @@ void main_game(){
 
     sf::Texture texture_ghost;
     if(!texture_ghost.loadFromFile("textures/duch.png")) {return ;}
+
+    sf::Texture texture_hp_potion;
+    if(!texture_hp_potion.loadFromFile("textures/hp_potion.png")) {return;}
 
     sf::Font font;
     if (!font.loadFromFile("czcionka.ttf")) { return ; }
@@ -329,11 +336,7 @@ void main_game(){
             Wygrana(window,text);
             continue;
         }
-        //Create boss
-        if(boss==nullptr&&character->get_points()>=2&&!character->get_killed_boss()){
-            boss=std::make_unique<Boss>(texture_boss,font);
 
-        }
         //Movement
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
@@ -362,6 +365,9 @@ void main_game(){
         //Create Boss
 
         //Gravitation +animations
+        for(auto &item:potions){
+            item->animate();
+        }
         if(boss!=nullptr){
             boss->boss_move(elapsed);
         }
@@ -384,6 +390,7 @@ void main_game(){
         for(auto &item:bullets) {
             item->bullet_move(elapsed);
         }
+
         //Collision check
 
         for(const auto &item:enemies){
@@ -451,7 +458,13 @@ void main_game(){
 
 
         }
-
+        for(auto it=potions.begin();it!=potions.end();it++){
+            if((*it)->getGlobalBounds().intersects(character->getGlobalBounds())){
+                potions.erase(it);
+                it--;
+                character->add_hp();
+            }
+        }
         //New enemy
         if(clock_enemy.getElapsedTime().asSeconds()>=1.0){
             clock_enemy.restart();
@@ -470,6 +483,16 @@ void main_game(){
 
 
             }
+        }
+        //Create boss
+        if(boss==nullptr&&character->get_points()>=150&&!character->get_killed_boss()){
+            boss=std::make_unique<Boss>(texture_boss,font);
+
+        }
+        //Create health potion
+        if(clock_hp_potion.getElapsedTime().asSeconds()>=15.f){
+            clock_hp_potion.restart();
+            potions.emplace_back(std::make_unique<Health_potion>(texture_hp_potion));
         }
         //view manipulation
         CheckView(window,view1,fire);
@@ -505,7 +528,11 @@ void main_game(){
         }
         window.draw(text_hp);
         window.draw(fire);
+        for(const auto &item:potions){
+            window.draw(*item);
+        }
         if(boss!=nullptr){
+            boss->draw_bullets(window);
             window.draw(boss->get_text_hp());
             window.draw(*boss);
         }

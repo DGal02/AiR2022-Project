@@ -17,7 +17,9 @@ SOURCES += \
         fire.cpp \
         fly.cpp \
         ghost.cpp \
-        main.cpp
+        health_potion.cpp \
+        main.cpp \
+        potion.cpp
 
 HEADERS += \
     boss.h \
@@ -26,4 +28,6 @@ HEADERS += \
     enemy.h \
     fire.h \
     fly.h \
-    ghost.h
+    ghost.h \
+    health_potion.h \
+    potion.h

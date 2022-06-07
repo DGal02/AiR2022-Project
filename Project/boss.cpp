@@ -1,5 +1,5 @@
 #include "boss.h"
-
+#include <iostream>
 Boss::Boss(const sf::Texture &texture,const sf::Font &font)
 {
 
@@ -25,6 +25,8 @@ void Boss::boss_move(const sf::Time &elapsed){
     bounce();
     move(elapsed.asSeconds()*speed_x,elapsed.asSeconds()*speed_y);
     set_hp_text();
+    shoot_bullets();
+    bullets_move(elapsed);
 }
 void Boss::bounce(){
     sf::FloatRect rectangle_bounds=this->getGlobalBounds();
@@ -69,4 +71,41 @@ void Boss::set_hp_text(){
 }
 sf::Text Boss::get_text_hp(){
     return text_hp;
+}
+void Boss::shoot_bullets(){
+    if(clock_bullets.getElapsedTime().asSeconds()<=5){
+        return;
+    }
+    clock_bullets.restart();
+    create_bullet(10+getGlobalBounds().width,0);
+    create_bullet(-10-getGlobalBounds().width,0);
+    create_bullet(0,10+getGlobalBounds().height);
+    create_bullet(0,-10-getGlobalBounds().height);
+    create_bullet(10+getGlobalBounds().width,10+getGlobalBounds().height);
+    create_bullet(-10-getGlobalBounds().width,10+getGlobalBounds().height);
+    create_bullet(10+getGlobalBounds().width,-10-getGlobalBounds().height);
+    create_bullet(-10-getGlobalBounds().width,-10-getGlobalBounds().height);
+}
+void Boss::create_bullet(int x, int y){
+    std::unique_ptr<Bullet> temp_bullet=std::make_unique<Bullet>(sf::Vector2i(getGlobalBounds().left-x,getGlobalBounds().top-y),getGlobalBounds());
+    temp_bullet->setRadius(15);
+    temp_bullet->setFillColor(sf::Color::Yellow);
+    std::cout << temp_bullet->getPosition().x << " " << temp_bullet->getPosition().y << std::endl;
+
+    bullets.emplace_back(std::move(temp_bullet));
+}
+void Boss::draw_bullets(sf::RenderWindow &window){
+    for(auto const &item:bullets){
+        window.draw(*item);
+    }
+}
+void Boss::bullets_move(const sf::Time &elapsed){
+
+    for(auto it=bullets.begin();it!=bullets.end();it++){
+        (*it)->bullet_move(elapsed);
+        if((*it)->check_border()){
+            bullets.erase(it);
+            it--;
+        }
+    }
 }

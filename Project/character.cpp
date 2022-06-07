@@ -11,7 +11,7 @@ Character::Character(const sf::Texture &text)
      collision_clock=NULL;
      va_gravitation=0;
      hp=5; //Wczytanie
-     points=0;
+     points=300;
      const_a_gravitation=400;
      killed_boss=false;
 }
@@ -130,7 +130,7 @@ void Character::add_points(int x){
 }
 void Character::collision(sf::Sound &sound){
     if(!(collision_clock==NULL)){
-        if(collision_clock->getElapsedTime().asSeconds()>=5.0){
+        if(collision_clock->getElapsedTime().asSeconds()>=3.0){
 
             collision_clock->restart();
             delete collision_clock;
@@ -151,7 +151,7 @@ bool Character::immortal(){
     if(collision_clock==NULL){
         return false;
     } else {
-        if(collision_clock->getElapsedTime().asSeconds()<=5){
+        if(collision_clock->getElapsedTime().asSeconds()<=3.0){
             return true;
         }
         return false;
@@ -163,4 +163,7 @@ void Character::kill_boss(){
 }
 bool Character::get_killed_boss(){
     return killed_boss;
+}
+void Character::add_hp(int x){
+    hp+=x;
 }

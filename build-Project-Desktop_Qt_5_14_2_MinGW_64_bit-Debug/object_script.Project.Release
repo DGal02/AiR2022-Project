@@ -1,0 +1,10 @@
+release/boss.o
+release/bullet.o
+release/character.o
+release/enemy.o
+release/fire.o
+release/fly.o
+release/ghost.o
+release/health_potion.o
+release/main.o
+release/potion.o

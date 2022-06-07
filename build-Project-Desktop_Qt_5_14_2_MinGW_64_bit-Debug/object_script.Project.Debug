@@ -1,0 +1,10 @@
+debug/boss.o
+debug/bullet.o
+debug/character.o
+debug/enemy.o
+debug/fire.o
+debug/fly.o
+debug/ghost.o
+debug/health_potion.o
+debug/main.o
+debug/potion.o
