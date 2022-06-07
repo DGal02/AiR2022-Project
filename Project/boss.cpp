@@ -1,5 +1,4 @@
 #include "boss.h"
-#include <iostream>
 Boss::Boss(const sf::Texture &texture,const sf::Font &font)
 {
 
@@ -8,8 +7,8 @@ Boss::Boss(const sf::Texture &texture,const sf::Font &font)
     setPosition(rand()%1800,custom_bounds.top+rand()%900);
     setTexture(texture);
     alive=false;
-    speed_x=800;
-    speed_y=800;
+    speed_x=600;
+    speed_y=600;
 
     hp=20;
     text_hp.setFont(font);
@@ -76,20 +75,47 @@ void Boss::shoot_bullets(){
         return;
     }
     clock_bullets.restart();
-    create_bullet(100+getGlobalBounds().width,0);
-    create_bullet(-100-getGlobalBounds().width,0);
-    create_bullet(0,100+getGlobalBounds().height);
-    create_bullet(0,-100-getGlobalBounds().height);
-    create_bullet(100+getGlobalBounds().width,100+getGlobalBounds().height);
-    create_bullet(-100-getGlobalBounds().width,100+getGlobalBounds().height);
-    create_bullet(100+getGlobalBounds().width,-100-getGlobalBounds().height);
-    create_bullet(-100-getGlobalBounds().width,-100-getGlobalBounds().height);
+
+
+
+
+        create_bullet(300.f+getGlobalBounds().width/2.f,0);
+        create_bullet(-300.f-getGlobalBounds().width/2.f,0);
+        create_bullet(0.f,300.f+getGlobalBounds().height/2.f);
+        create_bullet(0.f,-300.f-getGlobalBounds().height/2.f);
+
+
+
+        create_bullet(300.f+getGlobalBounds().width/2.f,300.f+getGlobalBounds().height/2.f);
+        create_bullet(-300.f-getGlobalBounds().width/2.f,300.f+getGlobalBounds().height/2.f);
+        create_bullet(300.f+getGlobalBounds().width/2.f,-300.f-getGlobalBounds().height/2.f);
+        create_bullet(-300.f-getGlobalBounds().width/2.f,-300.f-getGlobalBounds().height/2.f);
+
+        create_bullet(300.f+getGlobalBounds().width/2.f,200.f+getGlobalBounds().height/2.f);
+        create_bullet(300.f+getGlobalBounds().width/2.f,100.f+getGlobalBounds().height/2.f);
+        create_bullet(200.f+getGlobalBounds().width/2.f,300.f+getGlobalBounds().height/2.f);
+        create_bullet(100.f+getGlobalBounds().width/2.f,300.f+getGlobalBounds().height/2.f);
+
+        create_bullet(-300.f-getGlobalBounds().width/2.f,200.f+getGlobalBounds().height/2.f);
+        create_bullet(-300.f-getGlobalBounds().width/2.f,100.f+getGlobalBounds().height/2.f);
+        create_bullet(-200.f-getGlobalBounds().width/2.f,300.f+getGlobalBounds().height/2.f);
+        create_bullet(-100.f-getGlobalBounds().width/2.f,300.f+getGlobalBounds().height/2.f);
+
+        create_bullet(300.f+getGlobalBounds().width/2.f,-200.f-getGlobalBounds().height/2.f);
+        create_bullet(300.f+getGlobalBounds().width/2.f,-100.f-getGlobalBounds().height/2.f);
+        create_bullet(200.f+getGlobalBounds().width/2.f,-300.f-getGlobalBounds().height/2.f);
+        create_bullet(100.f+getGlobalBounds().width/2.f,-300.f-getGlobalBounds().height/2.f);
+
+        create_bullet(-300.f-getGlobalBounds().width/2.f,-200.f-getGlobalBounds().height/2.f);
+        create_bullet(-300.f-getGlobalBounds().width/2.f,-100.f-getGlobalBounds().height/2.f);
+        create_bullet(-200.f-getGlobalBounds().width/2.f,-300.f-getGlobalBounds().height/2.f);
+        create_bullet(-100.f-getGlobalBounds().width/2.f,-300.f-getGlobalBounds().height/2.f);
+
 }
 void Boss::create_bullet(int x, int y){
     std::unique_ptr<Bullet> temp_bullet=std::make_unique<Bullet>(sf::Vector2i(getGlobalBounds().left-x,getGlobalBounds().top-y),getGlobalBounds());
     temp_bullet->setRadius(15);
     temp_bullet->setFillColor(sf::Color::Yellow);
-    std::cout << temp_bullet->getPosition().x << " " << temp_bullet->getPosition().y << std::endl;
 
     bullets.emplace_back(std::move(temp_bullet));
 }
