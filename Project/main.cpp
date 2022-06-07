@@ -12,6 +12,7 @@
 #include "ghost.h"
 #include "potion.h"
 #include "health_potion.h"
+#include "double_shot_potion.h"
 void title_screen(){
     sf::Font bloody;
     if (!bloody.loadFromFile("fonts/BLOODY.ttf")) { return; }
@@ -181,9 +182,10 @@ void main_game(){
     sf::Clock clock;
     sf::Clock clock_enemy;
     sf::Clock clock_gun;
+    sf::Clock clock_double_shot;
     sf::View view1(sf::FloatRect(0.f, 0.f, window.getSize().x, window.getSize().y));
     bool first_while=true;
-
+    bool add_double_shot=true;
     //Load textures
     sf::Texture texture;
     if (!texture.loadFromFile("textures/space.png")) {
@@ -236,6 +238,9 @@ void main_game(){
     sf::Texture texture_hp_potion;
     if(!texture_hp_potion.loadFromFile("textures/hp_potion.png")) {return;}
 
+    sf::Texture texture_double_shot_potion;
+    if(!texture_double_shot_potion.loadFromFile("textures/pt1.png")) {return;}
+
     sf::Font font;
     if (!font.loadFromFile("czcionka.ttf")) { return ; }
 
@@ -250,6 +255,12 @@ void main_game(){
         return ;
     }
     sf::Sound gun_sound(gun_s);
+
+    sf::SoundBuffer boss_music;
+    if(!boss_music.loadFromFile("muza.wav")){return;}
+
+    sf::SoundBuffer bonus_music;
+    if(!bonus_music.loadFromFile("bonus1.wav")) {return;}
 
 
     //Create Mob Resps
@@ -294,7 +305,11 @@ void main_game(){
     text_hp.setFont(font);
     text_hp.setCharacterSize(25);
 
+    sf::Sound boss_sound;
+    boss_sound.setBuffer(boss_music);
 
+    sf::Sound bonus_sound;
+    bonus_sound.setBuffer(bonus_music);
     // run the program as long as the window is open
     while (window.isOpen()) {
 
@@ -326,6 +341,10 @@ void main_game(){
 
                     bullets.emplace_back(std::make_unique<Bullet>(mouse_pos,character->getGlobalBounds()));
                     gun_sound.play();
+                    if(character->get_enabled_double_shot()){
+                        character->set_mouse_position(mouse_pos,character->getGlobalBounds());
+                    }
+
                 }
             }
         }
@@ -364,15 +383,16 @@ void main_game(){
 
 
         }
-        //Create Boss
 
         //Gravitation +animations
         for(auto &item:potions){
             item->animate();
         }
+
         if(boss!=nullptr){
             boss->boss_move(elapsed);
         }
+
         character->set_ground_false();
         for(const auto &item:walls){
             if(character->on_ground()){
@@ -382,9 +402,10 @@ void main_game(){
             character->check_right(item,elapsed);
 
         }
-        character->gravitation(elapsed,view1);
         character->jump(elapsed,view1);
+        character->gravitation(elapsed,view1);
         fire.animate();
+
         for(auto &item:enemies){
             item->catch_character(elapsed,character->getGlobalBounds());
             item->animate();
@@ -403,9 +424,9 @@ void main_game(){
 
         if(boss!=nullptr){
             boss->check_collision(*character,sound);
-                if(character->getGlobalBounds().intersects(boss->getGlobalBounds())){
-                    character->collision(sound);
-                }
+            if(character->getGlobalBounds().intersects(boss->getGlobalBounds())){
+                character->collision(sound);
+            }
             for(auto it=bullets.begin();it!=bullets.end();it++){
                 if((*it)->getGlobalBounds().intersects(boss->getGlobalBounds())){
                     boss->reduce_hp();
@@ -463,9 +484,22 @@ void main_game(){
         }
         for(auto it=potions.begin();it!=potions.end();it++){
             if((*it)->getGlobalBounds().intersects(character->getGlobalBounds())){
+
+                Health_potion *temp_potion = dynamic_cast<Health_potion *>(it->get());
+                if (temp_potion != nullptr) { // cast successful
+                    character->add_hp();
+                }
+
+                Double_shot_potion *temp_potion2=dynamic_cast<Double_shot_potion *>(it->get());
+                if(temp_potion2!=nullptr){
+                    character->enable_double_shot();
+                }
+
+                bonus_sound.play();
+
                 potions.erase(it);
                 it--;
-                character->add_hp();
+
             }
         }
         //New enemy
@@ -491,11 +525,22 @@ void main_game(){
         if(boss==nullptr&&character->get_points()>=100&&!character->get_killed_boss()){
             boss=std::make_unique<Boss>(texture_boss,font);
 
+            boss_sound.play();
+
+        }
+        //Double shot
+        if(character->get_if_double_shot()){
+            bullets.emplace_back(std::make_unique<Bullet>(character->get_mouse_position(),character->get_bounds_double_shot()));
         }
         //Create health potion
         if(clock_hp_potion.getElapsedTime().asSeconds()>=15.f){
             clock_hp_potion.restart();
             potions.emplace_back(std::make_unique<Health_potion>(texture_hp_potion));
+        }
+        //Create double shot potion
+        if(clock_double_shot.getElapsedTime().asSeconds()>=50.f&&add_double_shot){
+            potions.emplace_back(std::make_unique<Double_shot_potion>(texture_double_shot_potion));
+            add_double_shot=false;
         }
         //view manipulation
         CheckView(window,view1,fire);

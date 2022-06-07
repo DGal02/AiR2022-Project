@@ -1,6 +1,7 @@
 debug/boss.o
 debug/bullet.o
 debug/character.o
+debug/double_shot_potion.o
 debug/enemy.o
 debug/fire.o
 debug/fly.o

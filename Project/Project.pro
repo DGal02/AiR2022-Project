@@ -13,6 +13,7 @@ SOURCES += \
         boss.cpp \
         bullet.cpp \
         character.cpp \
+        double_shot_potion.cpp \
         enemy.cpp \
         fire.cpp \
         fly.cpp \
@@ -25,6 +26,7 @@ HEADERS += \
     boss.h \
     bullet.h \
     character.h \
+    double_shot_potion.h \
     enemy.h \
     fire.h \
     fly.h \

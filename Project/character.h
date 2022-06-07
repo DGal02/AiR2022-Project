@@ -9,19 +9,24 @@ private:
     int speed_gravitation;
     bool on_ground_left;
     bool on_ground_right;
+    bool enabled_double_shot;
     sf::Clock* jump_clock;
     sf::Clock* collision_clock;
+    sf::Clock* double_shot_clock;
     float va_gravitation;
     int hp;
     int points;
     int const_a_gravitation;
     bool killed_boss;
+    sf::Vector2i mouse_position;
+    sf::FloatRect bounds_double_shot;
+
 
 
 public:
     Character(const sf::Texture &texture);
     Character();
-    ~Character();
+    virtual ~Character();
     void walk(const sf::Time &elapsed,int x,sf::View &my_view);
     void gravitation(const sf::Time &elapsed, sf::View &view);
     void set_ground_false();
@@ -34,15 +39,20 @@ public:
     void collision(sf::Sound &sound);
     void kill_boss();
     void add_hp(int x=1);
+    void set_mouse_position(const sf::Vector2i &pos,const sf::FloatRect &bounds);
+    void enable_double_shot();
     sf::Clock* r_jump_clock();
     int get_hp(); 
     int get_points();
+    sf::Vector2i get_mouse_position();
+    sf::FloatRect get_bounds_double_shot();
     bool on_ground();
     bool przegrana();
     bool wygrana();
     bool immortal();
     bool get_killed_boss();
-
+    bool get_if_double_shot();
+    bool get_enabled_double_shot();
 };
 
 

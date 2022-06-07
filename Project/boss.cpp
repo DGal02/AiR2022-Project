@@ -10,7 +10,7 @@ Boss::Boss(const sf::Texture &texture,const sf::Font &font)
     speed_x=600;
     speed_y=600;
 
-    hp=20;
+    hp=50;
     text_hp.setFont(font);
     text_hp.setCharacterSize(40);
     text_hp.setFillColor(sf::Color::White);
@@ -64,7 +64,7 @@ int Boss::get_hp(){
 }
 void Boss::set_hp_text(){
     text_hp.setString("HP: "+std::to_string(hp));
-    text_hp.setPosition( getGlobalBounds().left,getGlobalBounds().top-2-text_hp.getGlobalBounds().height );
+    text_hp.setPosition( getGlobalBounds().left,getGlobalBounds().top-10-text_hp.getGlobalBounds().height );
 
 }
 sf::Text Boss::get_text_hp(){
@@ -84,7 +84,25 @@ void Boss::shoot_bullets(){
         create_bullet(0.f,300.f+getGlobalBounds().height/2.f);
         create_bullet(0.f,-300.f-getGlobalBounds().height/2.f);
 
+        create_bullet(0.f,-200.f-getGlobalBounds().height/2.f);
+        create_bullet(0.f,-100.f-getGlobalBounds().height/2.f);
+        create_bullet(50.f,-200.f-getGlobalBounds().height/2.f);
+        create_bullet(50.f,-100.f-getGlobalBounds().height/2.f);
 
+        create_bullet(0.f,200.f+getGlobalBounds().height/2.f);
+        create_bullet(0.f,100.f+getGlobalBounds().height/2.f);
+        create_bullet(50.f,200.f+getGlobalBounds().height/2.f);
+        create_bullet(50.f,100.f+getGlobalBounds().height/2.f);
+
+        create_bullet(-200.f-getGlobalBounds().width/2.f,50.f);
+        create_bullet(-100.f-getGlobalBounds().width/2.f,50.f);
+        create_bullet(-200.f-getGlobalBounds().width/2.f,50.f);
+        create_bullet(-100.f-getGlobalBounds().width/2.f,50.f);
+
+        create_bullet(200.f+getGlobalBounds().width/2.f,50.f);
+        create_bullet(100.f+getGlobalBounds().width/2.f,50.f);
+        create_bullet(200.f+getGlobalBounds().width/2.f,50.f);
+        create_bullet(100.f+getGlobalBounds().width/2.f,50.f);
 
         create_bullet(300.f+getGlobalBounds().width/2.f,300.f+getGlobalBounds().height/2.f);
         create_bullet(-300.f-getGlobalBounds().width/2.f,300.f+getGlobalBounds().height/2.f);

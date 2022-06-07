@@ -1,6 +1,7 @@
 release/boss.o
 release/bullet.o
 release/character.o
+release/double_shot_potion.o
 release/enemy.o
 release/fire.o
 release/fly.o

@@ -11,13 +11,16 @@ Character::Character(const sf::Texture &text)
      collision_clock=NULL;
      va_gravitation=0;
      hp=5; //Wczytanie
-     points=300;
+     points=0;
      const_a_gravitation=400;
      killed_boss=false;
+     double_shot_clock=NULL;
+     enabled_double_shot=false;
 }
 Character::~Character(){
     delete jump_clock;
     delete collision_clock;
+    delete double_shot_clock;
 }
 void Character::walk(const sf::Time &elapsed, int x, sf::View &my_view){
 
@@ -57,7 +60,7 @@ void Character::check_left(const sf::Sprite &wall, const sf::Time &elapsed){
     float pointX=getGlobalBounds().left;
     float pointY=getGlobalBounds().top+getGlobalBounds().height;
     if(!((wall.getGlobalBounds().top>pointY)&&
-         ((pointY+elapsed.asSeconds()*va_gravitation+2)>=wall.getGlobalBounds().top)
+         ((pointY+elapsed.asSeconds()*va_gravitation+5.f)>=wall.getGlobalBounds().top)
          )){
         return;
     }
@@ -71,7 +74,7 @@ void Character::check_right(const sf::Sprite &wall,const sf::Time &elapsed){
     float pointX=getGlobalBounds().left+getGlobalBounds().width;
     float pointY=getGlobalBounds().top+getGlobalBounds().height;
     if(!((wall.getGlobalBounds().top>pointY)&&
-         ((pointY+elapsed.asSeconds()*va_gravitation+2)>=wall.getGlobalBounds().top)
+         ((pointY+elapsed.asSeconds()*va_gravitation+5.f)>=wall.getGlobalBounds().top)
          )){
 
         return;
@@ -87,6 +90,9 @@ bool Character::on_ground(){
 void Character::set_jump(){
     if(jump_clock==NULL&&on_ground()){
         jump_clock=new sf::Clock;
+    }
+    if(jump_clock!=NULL&&on_ground()){
+        jump_clock->restart();
     }
 
 }
@@ -166,4 +172,35 @@ bool Character::get_killed_boss(){
 }
 void Character::add_hp(int x){
     hp+=x;
+}
+void Character::set_mouse_position(const sf::Vector2i &pos,const sf::FloatRect &bounds){
+    if(double_shot_clock!=NULL){
+        return;
+    }
+    double_shot_clock=new sf::Clock;
+    mouse_position=pos;
+    bounds_double_shot=bounds;
+}
+bool Character::get_if_double_shot(){
+    if(double_shot_clock==NULL){
+        return false;
+    }
+    if(double_shot_clock->getElapsedTime().asSeconds()>=0.1){
+        delete double_shot_clock;
+        double_shot_clock=NULL;
+        return true;
+    }
+    return false;
+}
+sf::Vector2i Character::get_mouse_position(){
+    return mouse_position;
+}
+sf::FloatRect Character::get_bounds_double_shot(){
+    return bounds_double_shot;
+}
+bool Character::get_enabled_double_shot(){
+    return enabled_double_shot;
+}
+void Character::enable_double_shot(){
+    enabled_double_shot=true;
 }
