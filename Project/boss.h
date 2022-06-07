@@ -1,7 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "bullet.h"
-
+#include "character.h"
 class Boss :public sf::Sprite
 {
 private:
@@ -23,8 +23,10 @@ public:
     void reduce_hp(int x=1);
     void shoot_bullets();
     void draw_bullets(sf::RenderWindow &window);
+    void check_collision(Character &character,sf::Sound &sound);
     int get_hp();
     sf::Text get_text_hp();
+
 
 };
 

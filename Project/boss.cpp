@@ -5,9 +5,7 @@ Boss::Boss(const sf::Texture &texture,const sf::Font &font)
 
     setScale(0.1,0.1);
     custom_bounds=sf::FloatRect(0.f,-300.f,2000.f,1100.f);
-    int positionX=custom_bounds.width-getGlobalBounds().width +1;
-    int positionY=custom_bounds.height-getGlobalBounds().height+1;
-    setPosition(custom_bounds.left+rand()%positionX,custom_bounds.top+rand()%positionY);
+    setPosition(rand()%1800,custom_bounds.top+rand()%900);
     setTexture(texture);
     alive=false;
     speed_x=800;
@@ -27,6 +25,7 @@ void Boss::boss_move(const sf::Time &elapsed){
     set_hp_text();
     shoot_bullets();
     bullets_move(elapsed);
+
 }
 void Boss::bounce(){
     sf::FloatRect rectangle_bounds=this->getGlobalBounds();
@@ -77,14 +76,14 @@ void Boss::shoot_bullets(){
         return;
     }
     clock_bullets.restart();
-    create_bullet(10+getGlobalBounds().width,0);
-    create_bullet(-10-getGlobalBounds().width,0);
-    create_bullet(0,10+getGlobalBounds().height);
-    create_bullet(0,-10-getGlobalBounds().height);
-    create_bullet(10+getGlobalBounds().width,10+getGlobalBounds().height);
-    create_bullet(-10-getGlobalBounds().width,10+getGlobalBounds().height);
-    create_bullet(10+getGlobalBounds().width,-10-getGlobalBounds().height);
-    create_bullet(-10-getGlobalBounds().width,-10-getGlobalBounds().height);
+    create_bullet(100+getGlobalBounds().width,0);
+    create_bullet(-100-getGlobalBounds().width,0);
+    create_bullet(0,100+getGlobalBounds().height);
+    create_bullet(0,-100-getGlobalBounds().height);
+    create_bullet(100+getGlobalBounds().width,100+getGlobalBounds().height);
+    create_bullet(-100-getGlobalBounds().width,100+getGlobalBounds().height);
+    create_bullet(100+getGlobalBounds().width,-100-getGlobalBounds().height);
+    create_bullet(-100-getGlobalBounds().width,-100-getGlobalBounds().height);
 }
 void Boss::create_bullet(int x, int y){
     std::unique_ptr<Bullet> temp_bullet=std::make_unique<Bullet>(sf::Vector2i(getGlobalBounds().left-x,getGlobalBounds().top-y),getGlobalBounds());
@@ -106,6 +105,13 @@ void Boss::bullets_move(const sf::Time &elapsed){
         if((*it)->check_border()){
             bullets.erase(it);
             it--;
+        }
+    }
+}
+void Boss::check_collision(Character &character,sf::Sound &sound){
+    for(auto &item:bullets){
+        if(item->getGlobalBounds().intersects(character.getGlobalBounds())){
+            character.collision(sound);
         }
     }
 }

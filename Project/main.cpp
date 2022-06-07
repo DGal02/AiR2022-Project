@@ -162,6 +162,7 @@ float get_left_view(const sf::RenderWindow &window){
 float get_top_view(const sf::RenderWindow &window){
     return (window.getView().getCenter().y-window.getView().getSize().y/2);
 }
+
 void main_game(){
 
     // Initialize variables
@@ -316,6 +317,7 @@ void main_game(){
             }
             //Shoot
             if (event.type == sf::Event::MouseButtonPressed) {
+
                 if(event.mouseButton.button == sf::Mouse::Left &&clock_gun.getElapsedTime().asSeconds()>=0.3) {
                     clock_gun.restart();
                     sf::Vector2i mouse_pos = sf::Mouse::getPosition(window);
@@ -400,9 +402,10 @@ void main_game(){
         }
 
         if(boss!=nullptr){
-            if(character->getGlobalBounds().intersects(boss->getGlobalBounds())){
-                character->collision(sound);
-            }
+            boss->check_collision(*character,sound);
+                if(character->getGlobalBounds().intersects(boss->getGlobalBounds())){
+                    character->collision(sound);
+                }
             for(auto it=bullets.begin();it!=bullets.end();it++){
                 if((*it)->getGlobalBounds().intersects(boss->getGlobalBounds())){
                     boss->reduce_hp();
@@ -485,7 +488,7 @@ void main_game(){
             }
         }
         //Create boss
-        if(boss==nullptr&&character->get_points()>=150&&!character->get_killed_boss()){
+        if(boss==nullptr&&character->get_points()>=100&&!character->get_killed_boss()){
             boss=std::make_unique<Boss>(texture_boss,font);
 
         }
