@@ -11,7 +11,7 @@ Character::Character(const sf::Texture &text)
      collision_clock=NULL;
      va_gravitation=0;
      hp=5; //Wczytanie
-     points=0;
+     points=100;
      const_a_gravitation=400;
      killed_boss=false;
      double_shot_clock=NULL;

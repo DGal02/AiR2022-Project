@@ -20,6 +20,7 @@ SOURCES += \
         ghost.cpp \
         health_potion.cpp \
         main.cpp \
+        my_functions.cpp \
         potion.cpp
 
 HEADERS += \
