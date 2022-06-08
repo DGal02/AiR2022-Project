@@ -16,6 +16,7 @@ Character::Character(const sf::Texture &text)
      killed_boss=false;
      double_shot_clock=NULL;
      enabled_double_shot=false;
+     jump_or_die=5.f;
 }
 Character::~Character(){
     delete jump_clock;
@@ -108,6 +109,7 @@ void Character::jump(const sf::Time &elapsed,sf::View &view){
         delete jump_clock;
         jump_clock=NULL;
     }
+    jump_rectangle_clock.restart();
     move(0,-elapsed.asSeconds()*speed_gravitation*3);
     view.move(0,-elapsed.asSeconds()*speed_gravitation*3);
     va_gravitation=0;
@@ -203,4 +205,26 @@ bool Character::get_enabled_double_shot(){
 }
 void Character::enable_double_shot(){
     enabled_double_shot=true;
+}
+void Character::set_rectangle_jump(sf::Sound &sound){
+    jump_rectangle.setSize(sf::Vector2f(40.f*jump_rectangle_clock.getElapsedTime().asSeconds(),20.f));
+    if(jump_rectangle_clock.getElapsedTime().asSeconds()>jump_or_die){
+        reduce_life(sound,hp);
+    }
+    if(jump_rectangle_clock.getElapsedTime().asSeconds()>jump_or_die-(1.f/3.f)*jump_or_die){
+        jump_rectangle.setFillColor(sf::Color::Red);
+        return;
+    }
+    if(jump_rectangle_clock.getElapsedTime().asSeconds()>jump_or_die-(2.f/3.f)*jump_or_die){
+        jump_rectangle.setFillColor(sf::Color::Yellow);
+        return;
+    }
+    if(jump_rectangle_clock.getElapsedTime().asSeconds()>jump_or_die-(3.f/3.f)*jump_or_die){
+        jump_rectangle.setFillColor(sf::Color::Green);
+        return;
+    }
+
+}
+sf::RectangleShape Character::get_rectangle_jump(){
+    return jump_rectangle;
 }

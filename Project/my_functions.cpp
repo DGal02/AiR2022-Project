@@ -569,8 +569,16 @@ void main_game(){
             text_to_draw+="IMMORTAL";
         }
         text_hp.setString(text_to_draw);
-        text_hp.setPosition(get_left_view(window),get_top_view(window));
-
+        text_hp.setPosition(get_left_view(window)+5,get_top_view(window));
+        character->set_rectangle_jump(sound);
+        auto rectangle_jump=character->get_rectangle_jump();
+        rectangle_jump.setPosition(text_hp.getGlobalBounds().left,text_hp.getGlobalBounds().top+30);
+        sf::RectangleShape rectangle_jump_border;
+        rectangle_jump_border.setPosition(rectangle_jump.getGlobalBounds().left,rectangle_jump.getGlobalBounds().top);
+        rectangle_jump_border.setSize(sf::Vector2f(200.f,rectangle_jump.getGlobalBounds().height));
+        rectangle_jump_border.setFillColor(sf::Color(0,0,0,0));
+        rectangle_jump_border.setOutlineThickness(5);
+        rectangle_jump_border.setOutlineColor(sf::Color::Black);
         //Draw
         window.clear(sf::Color::Black);
 
@@ -590,6 +598,8 @@ void main_game(){
             window.draw(*item);
         }
         window.draw(text_hp);
+        window.draw(rectangle_jump_border);
+        window.draw(rectangle_jump);
         window.draw(fire);
         for(const auto &item:potions){
             window.draw(*item);
