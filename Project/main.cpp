@@ -1,10 +1,9 @@
 
-#include "my_functions.cpp"
+#include "my_functions.h"
 
 
 
 int main() {
     title_screen();
-    main_game();
     return 0;
 }

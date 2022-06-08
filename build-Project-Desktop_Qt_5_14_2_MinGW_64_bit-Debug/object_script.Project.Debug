@@ -8,4 +8,5 @@ debug/fly.o
 debug/ghost.o
 debug/health_potion.o
 debug/main.o
+debug/my_functions.o
 debug/potion.o

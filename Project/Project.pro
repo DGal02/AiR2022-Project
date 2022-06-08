@@ -33,4 +33,5 @@ HEADERS += \
     fly.h \
     ghost.h \
     health_potion.h \
+    my_functions.h \
     potion.h

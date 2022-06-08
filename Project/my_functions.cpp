@@ -1,18 +1,10 @@
-#include <iostream>
-
-#include <SFML/Window.hpp>
-#include <SFML/Graphics.hpp>
-#include <SFML/Audio.hpp>
-#include "character.h"
-#include "fire.h"
-#include "enemy.h"
-#include "fly.h"
-#include "bullet.h"
-#include "boss.h"
-#include "ghost.h"
-#include "potion.h"
-#include "health_potion.h"
-#include "double_shot_potion.h"
+#include "my_functions.h"
+template <class name>
+void new_enemy(std::vector<std::unique_ptr<Enemy>> &enemies,const sf::Texture &texture,float x,float y){
+    auto temp_obj=std::make_unique<name>(texture);
+    temp_obj->setPosition(x,y);
+    enemies.emplace_back(std::move(temp_obj));
+}
 void title_screen(){
     sf::Font bloody;
     if (!bloody.loadFromFile("fonts/BLOODY.ttf")) { return; }
@@ -62,6 +54,7 @@ void title_screen(){
                             ( (rectangle_bounds.top<=mouse_pos.y) && ( (rectangle_bounds.top + rectangle_bounds.height) >=mouse_pos.y )))
                     {
                         window.close();
+                        main_game();
                     }
                 }
             }
@@ -153,12 +146,7 @@ void CheckView(sf::RenderWindow &window,sf::View &view,const Fire &fire){
     window.setView(sf::View(sf::FloatRect(x,y,window.getSize().x,window.getSize().y)));
 }
 
-template <class name>
-void new_enemy(std::vector<std::unique_ptr<Enemy>> &enemies,const sf::Texture &texture,float x,float y){
-    auto temp_obj=std::make_unique<name>(texture);
-    temp_obj->setPosition(x,y);
-    enemies.emplace_back(std::move(temp_obj));
-}
+
 float get_left_view(const sf::RenderWindow &window){
     return (window.getView().getCenter().x-window.getView().getSize().x/2);
 }
@@ -410,7 +398,46 @@ void main_game(){
 
 
         }
+        //New enemy
+        if(clock_enemy.getElapsedTime().asSeconds()>=1.0){
+            clock_enemy.restart();
+            int random_number=rand()%3;
+            switch(random_number){
+            case 0:
+                new_enemy<Ghost>(enemies,texture_ghost,mob_spawns[random_number].getGlobalBounds().left+mob_spawns[random_number].getGlobalBounds().width/2, mob_spawns[random_number].getGlobalBounds().top+mob_spawns[random_number].getGlobalBounds().height/2);
+                break;
 
+            case 1:
+                new_enemy<Fly>(enemies,texture_fly,mob_spawns[random_number].getGlobalBounds().left+mob_spawns[random_number].getGlobalBounds().width/2, mob_spawns[random_number].getGlobalBounds().top+mob_spawns[random_number].getGlobalBounds().height/2);
+                break;
+            case 2:
+                new_enemy<Fly>(enemies,texture_fly,mob_spawns[random_number].getGlobalBounds().left+mob_spawns[random_number].getGlobalBounds().width/2, mob_spawns[random_number].getGlobalBounds().top+mob_spawns[random_number].getGlobalBounds().height/2);;
+                break;
+
+
+            }
+        }
+        //Create boss
+        if(boss==nullptr&&character->get_points()>=100&&!character->get_killed_boss()){
+            boss=std::make_unique<Boss>(texture_boss,font);
+
+            boss_sound.play();
+            boss_sound.setLoop(true);
+        }
+        //Double shot
+        if(character->get_if_double_shot()){
+            bullets.emplace_back(std::make_unique<Bullet>(character->get_mouse_position(),character->get_bounds_double_shot()));
+        }
+        //Create health potion
+        if(clock_hp_potion.getElapsedTime().asSeconds()>=15.f){
+            clock_hp_potion.restart();
+            potions.emplace_back(std::make_unique<Health_potion>(texture_hp_potion));
+        }
+        //Create double shot potion
+        if(clock_double_shot.getElapsedTime().asSeconds()>=50.f&&add_double_shot){
+            potions.emplace_back(std::make_unique<Double_shot_potion>(texture_double_shot_potion));
+            add_double_shot=false;
+        }
         //Gravitation +animations
         for(auto &item:potions){
             item->animate();
@@ -529,46 +556,7 @@ void main_game(){
 
             }
         }
-        //New enemy
-        if(clock_enemy.getElapsedTime().asSeconds()>=1.0){
-            clock_enemy.restart();
-            int random_number=rand()%3;
-            switch(random_number){
-            case 0:
-                new_enemy<Ghost>(enemies,texture_ghost,mob_spawns[random_number].getGlobalBounds().left+mob_spawns[random_number].getGlobalBounds().width/2, mob_spawns[random_number].getGlobalBounds().top+mob_spawns[random_number].getGlobalBounds().height/2);
-                break;
 
-            case 1:
-                new_enemy<Fly>(enemies,texture_fly,mob_spawns[random_number].getGlobalBounds().left+mob_spawns[random_number].getGlobalBounds().width/2, mob_spawns[random_number].getGlobalBounds().top+mob_spawns[random_number].getGlobalBounds().height/2);
-                break;
-            case 2:
-                new_enemy<Fly>(enemies,texture_fly,mob_spawns[random_number].getGlobalBounds().left+mob_spawns[random_number].getGlobalBounds().width/2, mob_spawns[random_number].getGlobalBounds().top+mob_spawns[random_number].getGlobalBounds().height/2);;
-                break;
-
-
-            }
-        }
-        //Create boss
-        if(boss==nullptr&&character->get_points()>=100&&!character->get_killed_boss()){
-            boss=std::make_unique<Boss>(texture_boss,font);
-
-            boss_sound.play();
-            boss_sound.setLoop(true);
-        }
-        //Double shot
-        if(character->get_if_double_shot()){
-            bullets.emplace_back(std::make_unique<Bullet>(character->get_mouse_position(),character->get_bounds_double_shot()));
-        }
-        //Create health potion
-        if(clock_hp_potion.getElapsedTime().asSeconds()>=15.f){
-            clock_hp_potion.restart();
-            potions.emplace_back(std::make_unique<Health_potion>(texture_hp_potion));
-        }
-        //Create double shot potion
-        if(clock_double_shot.getElapsedTime().asSeconds()>=50.f&&add_double_shot){
-            potions.emplace_back(std::make_unique<Double_shot_potion>(texture_double_shot_potion));
-            add_double_shot=false;
-        }
         //view manipulation
         CheckView(window,view1,fire);
         //GUI
