@@ -117,7 +117,7 @@ void Create_mob_resp(std::vector<sf::Sprite> &mob_resp,const sf::Texture &textur
 
 void Wygrana(sf::RenderWindow &window,sf::Text &text){
     text.setString("WYGRANA!");
-    text.setPosition(20,20);
+    text.setPosition(window.getSize().x/2.f-text.getGlobalBounds().width/2.f,20);
     text.setFillColor(sf::Color::Green);
     window.setView(sf::View(sf::FloatRect(0,0,1600,800)));
     window.clear(sf::Color::Black);
@@ -127,8 +127,9 @@ void Wygrana(sf::RenderWindow &window,sf::Text &text){
 void Przegrana(sf::RenderWindow &window,sf::Text &text,sf::Sound &sound){
     sound.stop();
     text.setString("PRZEGRANA!");
-    text.setPosition(20,20);
+
     text.setFillColor(sf::Color::Red);
+    text.setPosition(window.getSize().x/2.f-text.getGlobalBounds().width/2.f,20);
     window.setView(sf::View(sf::FloatRect(0,0,1600,800)));
     window.clear(sf::Color::Black);
     window.draw(text);
@@ -345,6 +346,35 @@ void main_game(){
                     if(character->get_enabled_double_shot()){
                         character->set_mouse_position(mouse_pos,character->getGlobalBounds());
                     }
+
+                }
+            }
+            //Camera move
+            if(event.type==sf::Event::KeyReleased){
+                if (event.key.code == sf::Keyboard::Up)
+                {
+                    view1.move(0,-20.f);
+
+                }
+            }
+            if(event.type==sf::Event::KeyReleased){
+                if (event.key.code == sf::Keyboard::Down)
+                {
+                    view1.move(0,20.f);
+
+                }
+            }
+            if(event.type==sf::Event::KeyReleased){
+                if (event.key.code == sf::Keyboard::Left)
+                {
+                    view1.move(-20.f,0);
+
+                }
+            }
+            if(event.type==sf::Event::KeyReleased){
+                if (event.key.code == sf::Keyboard::Right)
+                {
+                    view1.move(20.f,0);
 
                 }
             }

@@ -1,5 +1,4 @@
-#ifndef HEALTH_POTION_H
-#define HEALTH_POTION_H
+#pragma once
 
 #include "potion.h"
 
@@ -10,4 +9,4 @@ public:
     void animate();
 };
 
-#endif // HEALTH_POTION_H
+

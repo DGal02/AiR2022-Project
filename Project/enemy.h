@@ -15,6 +15,7 @@ protected:
     void set_rectangle_hp();
 public:
     Enemy(const sf::Texture &texture);
+    virtual ~Enemy()=default;
     virtual void catch_character(const sf::Time &elapsed, const sf::FloatRect &bounds);
     virtual void animate();
     virtual int get_hp();

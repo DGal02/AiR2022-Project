@@ -9,6 +9,7 @@ protected:
 public:
     Potion(const sf::Texture &texture);
     virtual void animate();
+    virtual ~Potion()=default;
 };
 
 
