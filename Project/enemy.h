@@ -1,6 +1,7 @@
 #pragma once
 #include <cmath>
 #include <SFML/Graphics.hpp>
+#include "bullet.h"
 class Enemy : public sf::Sprite
 {
 protected:

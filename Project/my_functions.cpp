@@ -30,7 +30,8 @@ void title_screen(){
     outline_start.setOutlineThickness(3);
 
     sf::RenderWindow window(sf::VideoMode(800, 600), "My window",sf::Style::Titlebar | sf::Style::Close);
-
+    window.setVerticalSyncEnabled(true);
+    window.setFramerateLimit(144);
     sf::Cursor cursor;
     if (cursor.loadFromSystem(sf::Cursor::Hand))
         window.setMouseCursor(cursor);
@@ -231,6 +232,9 @@ void main_game(){
     sf::Texture texture_double_shot_potion;
     if(!texture_double_shot_potion.loadFromFile("textures/pt1.png")) {return;}
 
+    sf::Texture texture_shooter;
+    if(!texture_shooter.loadFromFile("textures/shooting.png")){return;}
+
     sf::Font font;
     if (!font.loadFromFile("czcionka.ttf")) { return ; }
 
@@ -411,7 +415,7 @@ void main_game(){
                 new_enemy<Fly>(enemies,texture_fly,mob_spawns[random_number].getGlobalBounds().left+mob_spawns[random_number].getGlobalBounds().width/2, mob_spawns[random_number].getGlobalBounds().top+mob_spawns[random_number].getGlobalBounds().height/2);
                 break;
             case 2:
-                new_enemy<Fly>(enemies,texture_fly,mob_spawns[random_number].getGlobalBounds().left+mob_spawns[random_number].getGlobalBounds().width/2, mob_spawns[random_number].getGlobalBounds().top+mob_spawns[random_number].getGlobalBounds().height/2);;
+                new_enemy<Shoter>(enemies,texture_shooter,mob_spawns[random_number].getGlobalBounds().left+mob_spawns[random_number].getGlobalBounds().width/2, mob_spawns[random_number].getGlobalBounds().top+mob_spawns[random_number].getGlobalBounds().height/2);;
                 break;
 
 
@@ -426,7 +430,9 @@ void main_game(){
         }
         //Double shot
         if(character->get_if_double_shot()){
-            bullets.emplace_back(std::make_unique<Bullet>(character->get_mouse_position(),character->get_bounds_double_shot()));
+            auto temp_bullet=std::make_unique<Bullet>(character->get_mouse_position(),character->get_bounds_double_shot());
+            temp_bullet->setFillColor(sf::Color(255,140,0));
+            bullets.emplace_back(std::move(temp_bullet));
         }
         //Create health potion
         if(clock_hp_potion.getElapsedTime().asSeconds()>=15.f){
@@ -460,9 +466,15 @@ void main_game(){
         character->gravitation(elapsed,view1);
         fire.animate();
 
-        for(auto &item:enemies){
-            item->catch_character(elapsed,character->getGlobalBounds());
-            item->animate();
+
+        for(auto it=enemies.begin();it!=enemies.end();it++){
+            (*it)->catch_character(elapsed,character->getGlobalBounds());
+            (*it)->animate();
+            Shoter *temp_shoter = dynamic_cast<Shoter *>(it->get());
+            if (temp_shoter != nullptr) { // cast successful
+                temp_shoter->create_bullet(character->getGlobalBounds());
+                temp_shoter->bullets_move(elapsed);
+            }
         }
         for(auto &item:bullets) {
             item->bullet_move(elapsed);
@@ -593,9 +605,13 @@ void main_game(){
         for(const auto&item:bullets){
             window.draw(*item);
         }
-        for(const auto&item:enemies){
-            window.draw(item->get_rectangle_hp());
-            window.draw(*item);
+        for(auto it=enemies.begin();it!=enemies.end();it++){
+            window.draw((*it)->get_rectangle_hp());
+            window.draw(*(*it));
+            Shoter *temp_shoter = dynamic_cast<Shoter *>(it->get());
+            if (temp_shoter != nullptr) { // cast successful
+                temp_shoter->draw_bullets(window);
+            }
         }
         window.draw(text_hp);
         window.draw(rectangle_jump_border);
@@ -615,3 +631,7 @@ void main_game(){
         window.display();
     }
 }
+
+
+
+

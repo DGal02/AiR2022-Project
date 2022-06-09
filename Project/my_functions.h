@@ -14,9 +14,11 @@
 #include "potion.h"
 #include "health_potion.h"
 #include "double_shot_potion.h"
+#include "shoter.h"
 void main_game();
 void title_screen();
-
+template <class name>
+void new_enemy(std::vector<std::unique_ptr<Enemy>> &enemies,const sf::Texture &texture,float x,float y);
 void Create_wall(std::vector<sf::Sprite> &walls, const sf::Texture &texture,int x,int y);
 void Create_mob_resp(std::vector<sf::Sprite> &mob_resp,const sf::Texture &texture);
 void Wygrana(sf::RenderWindow &window,sf::Text &text);

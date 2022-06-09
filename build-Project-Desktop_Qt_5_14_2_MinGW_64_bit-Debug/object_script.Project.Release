@@ -10,3 +10,4 @@ release/health_potion.o
 release/main.o
 release/my_functions.o
 release/potion.o
+release/shoter.o
