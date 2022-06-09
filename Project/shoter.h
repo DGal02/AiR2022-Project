@@ -1,7 +1,7 @@
 #pragma once
 
 #include "enemy.h"
-
+#include "character.h"
 class Shoter : public Enemy
 {
 private:
@@ -12,6 +12,7 @@ public:
     void draw_bullets(sf::RenderWindow &window);
     void create_bullet(const sf::FloatRect &bounds);
     void bullets_move(const sf::Time &elapsed);
+    void check_collision(Character &character,sf::Sound &sound);
 };
 
 

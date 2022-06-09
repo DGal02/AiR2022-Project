@@ -481,10 +481,13 @@ void main_game(){
         }
 
         //Collision check
-
-        for(const auto &item:enemies){
-            if(character->getGlobalBounds().intersects(item->getGlobalBounds())){
+        for(auto it=enemies.begin();it!=enemies.end();it++){
+            if(character->getGlobalBounds().intersects((*it)->getGlobalBounds())){
                 character->collision(sound);
+            }
+            Shoter *temp_shoter = dynamic_cast<Shoter *>(it->get());
+            if (temp_shoter != nullptr) { // cast successful
+                temp_shoter->check_collision(*character,sound);
             }
         }
 
