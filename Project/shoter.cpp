@@ -36,6 +36,8 @@ void Shoter::check_collision(Character &character, sf::Sound &sound){
     for(auto it=bullets.begin();it!=bullets.end();it++){
         if(character.getGlobalBounds().intersects((*it)->getGlobalBounds())){
             character.collision(sound);
+            bullets.erase(it);
+            it--;
         }
     }
 }
