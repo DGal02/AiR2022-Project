@@ -29,7 +29,7 @@ void title_screen(){
     outline_start.setOutlineColor(sf::Color::Red);
     outline_start.setOutlineThickness(3);
 
-    sf::RenderWindow window(sf::VideoMode(800, 600), "My window",sf::Style::Titlebar | sf::Style::Close);
+    sf::RenderWindow window(sf::VideoMode(800, 600), "Jump or Die",sf::Style::Titlebar | sf::Style::Close);
     window.setVerticalSyncEnabled(true);
     window.setFramerateLimit(144);
     sf::Cursor cursor;
