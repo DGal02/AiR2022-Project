@@ -1,6 +1,6 @@
 #pragma once
 #include <iostream>
-
+#include <math.h>
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
@@ -29,3 +29,4 @@ void new_enemy(std::vector<std::unique_ptr<Enemy>> &enemies,const sf::Texture &t
 float get_left_view(const sf::RenderWindow &window);
 float get_top_view(const sf::RenderWindow &window);
 void main_game();
+void mouse_move(const sf::Time &elapsed,float x=0,float y=0);

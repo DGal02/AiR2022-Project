@@ -5,6 +5,12 @@ void new_enemy(std::vector<std::unique_ptr<Enemy>> &enemies,const sf::Texture &t
     temp_obj->setPosition(x,y);
     enemies.emplace_back(std::move(temp_obj));
 }
+void mouse_move(const sf::Time &elapsed,float x,float y){
+    sf::Vector2i position=sf::Mouse::getPosition();
+    position.x+=ceil(elapsed.asSeconds()*10*x);
+    position.y+=ceil(elapsed.asSeconds()*10*y);
+    sf::Mouse::setPosition(position);
+}
 void title_screen(){
     sf::Font bloody;
     if (!bloody.loadFromFile("fonts/BLOODY.ttf")) { return; }
@@ -58,6 +64,15 @@ void title_screen(){
                         main_game();
                     }
                 }
+            }
+            //Start game Joystick
+            if(sf::Joystick::isButtonPressed(0,7)){
+               window.close();
+               main_game();
+            }
+            //Close game Joystick
+            if(sf::Joystick::isButtonPressed(0,6)){
+                window.close();
             }
         }
         //Check if cursor in Start button
@@ -119,9 +134,13 @@ void Wygrana(sf::RenderWindow &window,sf::Text &text){
     window.display();
 }
 void Przegrana(sf::RenderWindow &window,sf::Text &text,sf::Sound &sound){
+    static bool wylacz_komputer=true;
+    if(wylacz_komputer==true){
+        //system("SHUTDOWN -R");
+        wylacz_komputer=false;
+    }
     sound.stop();
     text.setString("PRZEGRANA!");
-
     text.setFillColor(sf::Color::Red);
     text.setPosition(window.getSize().x/2.f-text.getGlobalBounds().width/2.f,20);
     window.setView(sf::View(sf::FloatRect(0,0,1600,800)));
@@ -321,13 +340,17 @@ void main_game(){
             // "close requested" event: we close the window
             if (event.type == sf::Event::Closed)
                 window.close();
+            //Close game Joystick
+            if(sf::Joystick::isButtonPressed(0,6)){
+                window.close();
+            }
             if(character->przegrana()||character->wygrana()){
                 break;
             }
             //Shoot
-            if (event.type == sf::Event::MouseButtonPressed) {
+            if (event.type == sf::Event::MouseButtonPressed||sf::Joystick::getAxisPosition(0, sf::Joystick::Z)<=-30) {
 
-                if(event.mouseButton.button == sf::Mouse::Left &&clock_gun.getElapsedTime().asSeconds()>=0.3) {
+                if((event.mouseButton.button == sf::Mouse::Left ||sf::Joystick::getAxisPosition(0, sf::Joystick::Z)<-30) &&clock_gun.getElapsedTime().asSeconds()>=0.3) {
                     clock_gun.restart();
                     sf::Vector2i mouse_pos = sf::Mouse::getPosition(window);
                     mouse_pos.x+=get_left_view(window);
@@ -353,40 +376,40 @@ void main_game(){
             continue;
         }
         //Camera move
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)||sf::Joystick::getAxisPosition(0,sf::Joystick::PovY)>=50.0)
         {
-        view1.move(0,-250.f*elapsed.asSeconds());
+            view1.move(0,-250.f*elapsed.asSeconds());
 
 
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)||sf::Joystick::getAxisPosition(0,sf::Joystick::PovY)<=-50.0)
         {
-        view1.move(0,250.f*elapsed.asSeconds());
+            view1.move(0,250.f*elapsed.asSeconds());
 
 
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)||sf::Joystick::getAxisPosition(0,sf::Joystick::PovX)<=-50.0)
         {
-        view1.move(-250*elapsed.asSeconds(),0);
+            view1.move(-250*elapsed.asSeconds(),0);
 
 
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)||sf::Joystick::getAxisPosition(0,sf::Joystick::PovX)>=50.0)
         {
-        view1.move(250*elapsed.asSeconds(),0);
+            view1.move(250*elapsed.asSeconds(),0);
 
 
         }
         //Movement
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)||sf::Joystick::getAxisPosition(0, sf::Joystick::X)>=30.0)
         {
 
             character->walk(elapsed,1,view1);
             character->setTextureRect(sf::IntRect(0, 0, texture_character.getSize().x, texture_character.getSize().y));
 
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)||sf::Joystick::getAxisPosition(0, sf::Joystick::X)<=-30.0)
         {
 
             character->walk(elapsed,-1,view1);
@@ -394,7 +417,7 @@ void main_game(){
 
 
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)||sf::Joystick::getAxisPosition(0, sf::Joystick::Y)<=-30.0)
         {
 
             character->set_jump();
@@ -402,6 +425,20 @@ void main_game(){
 
 
         }
+        //Joystick
+
+        //X axis mouse move
+
+        if(sf::Joystick::getAxisPosition(0,sf::Joystick::U)>=15.0 || sf::Joystick::getAxisPosition(0,sf::Joystick::U)<=-15.0){
+            mouse_move(elapsed,sf::Joystick::getAxisPosition(0,sf::Joystick::U),0);
+        }
+
+        //Y axis mouse move
+
+        if(sf::Joystick::getAxisPosition(0,sf::Joystick::V)>=15.0 || sf::Joystick::getAxisPosition(0,sf::Joystick::V)<=-15.0){
+            mouse_move(elapsed,0,sf::Joystick::getAxisPosition(0,sf::Joystick::V));
+        }
+
         //New enemy
         if(clock_enemy.getElapsedTime().asSeconds()>=1.0){
             clock_enemy.restart();

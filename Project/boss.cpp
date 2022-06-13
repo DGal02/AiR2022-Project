@@ -24,36 +24,24 @@ void Boss::boss_move(const sf::Time &elapsed){
     set_hp_text();
     shoot_bullets();
     bullets_move(elapsed);
-
 }
 void Boss::bounce(){
     sf::FloatRect rectangle_bounds=this->getGlobalBounds();
     // Y axis-right
     if((rectangle_bounds.top+rectangle_bounds.height)>=(custom_bounds.top+custom_bounds.height)){
         speed_y=-std::abs(speed_y);
-
-
-
     }
     // Y axis-left
     if((rectangle_bounds.top)<=custom_bounds.top){
         speed_y=std::abs(speed_y);
-
-
-
     }
     // X axis-right
     if((rectangle_bounds.left+rectangle_bounds.width)>=(custom_bounds.left+custom_bounds.width)){
         speed_x=-std::abs(speed_x);
-
-
-
     }
     // X axis-left
     if((rectangle_bounds.left)<=custom_bounds.left){
         speed_x=std::abs(speed_x);
-
-
     }
 }
 void Boss::reduce_hp(int x){
@@ -65,7 +53,6 @@ int Boss::get_hp(){
 void Boss::set_hp_text(){
     text_hp.setString("HP: "+std::to_string(hp));
     text_hp.setPosition( getGlobalBounds().left,getGlobalBounds().top-10-text_hp.getGlobalBounds().height );
-
 }
 sf::Text Boss::get_text_hp(){
     return text_hp;
@@ -75,10 +62,6 @@ void Boss::shoot_bullets(){
         return;
     }
     clock_bullets.restart();
-
-
-
-
         create_bullet(300.f+getGlobalBounds().width/2.f,0);
         create_bullet(-300.f-getGlobalBounds().width/2.f,0);
         create_bullet(0.f,300.f+getGlobalBounds().height/2.f);
