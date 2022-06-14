@@ -2,11 +2,11 @@
 
 Character::Character(const sf::Texture &text)
 {
-    setTexture(text);
+     setTexture(text);
      on_ground_left=true;
      on_ground_right=true;
      speed_x=500;
-     speed_gravitation=200; //Wczytanie
+     speed_gravitation=220; //Wczytanie
      jump_clock=NULL;
      collision_clock=NULL;
      va_gravitation=0;
@@ -19,6 +19,13 @@ Character::Character(const sf::Texture &text)
      jump_or_die=5.f;
      extra_speed_gravitation=5;
      extra_immortal_time=0.0;
+     std::string from_file;
+     std::string from_file2;
+     std::ifstream FileRead("files/hp_character.txt");
+         FileRead >> from_file >> from_file2;
+         FileRead.close();
+         hp=stoi(from_file);
+         const_a_gravitation=stoi(from_file2);
 }
 Character::~Character(){
     delete jump_clock;
@@ -41,7 +48,7 @@ void Character::walk(const sf::Time &elapsed, int x, sf::View &my_view){
 
     my_view.move(moveX,0);
 
-    //std::cout << "left:" << getGlobalBounds().left << " top:" << getGlobalBounds().top << std::endl;
+
     move(moveX,0);
 }
 void Character::gravitation(const sf::Time &elapsed,sf::View &view){
@@ -96,7 +103,8 @@ void Character::check_right(Wall &wall,const sf::Time &elapsed){
 
     }
     on_ground_right=true;
-    std::cout << speed_gravitation << std::endl;
+
+
 }
 bool Character::on_ground(){
     return (on_ground_left||on_ground_right);

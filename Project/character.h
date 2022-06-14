@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <fstream>
 #include <SFML/Audio.hpp>
 #include "wall.h"
 class Character : public sf::Sprite
