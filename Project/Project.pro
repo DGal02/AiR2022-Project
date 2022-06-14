@@ -22,7 +22,8 @@ SOURCES += \
         main.cpp \
         my_functions.cpp \
         potion.cpp \
-        shoter.cpp
+        shoter.cpp \
+        wall.cpp
 
 HEADERS += \
     boss.h \
@@ -36,4 +37,5 @@ HEADERS += \
     health_potion.h \
     my_functions.h \
     potion.h \
-    shoter.h
+    shoter.h \
+    wall.h

@@ -11,6 +11,32 @@ void mouse_move(const sf::Time &elapsed,float x,float y){
     position.y+=ceil(elapsed.asSeconds()*10*y);
     sf::Mouse::setPosition(position);
 }
+void set_wall_to_obtain(const Character &character,std::vector<Wall> &walls){
+    size_t obk=0;
+
+    // float x1=character.getGlobalBounds().left+(character.getGlobalBounds().width/2.f) - wall1.getGlobalBounds().left-(wall1.getGlobalBounds().width/2.f);
+    // float x2=character.getGlobalBounds().left+(character.getGlobalBounds().width/2.f) - wall2.getGlobalBounds().left-(wall2.getGlobalBounds().width/2.f);
+    // float y1=character.getGlobalBounds().top+(character.getGlobalBounds().height/2.f)-wall1.getGlobalBounds().top;
+    // float y2=character.getGlobalBounds().top+(character.getGlobalBounds().height/2.f)-wall2.getGlobalBounds().top;
+
+    // float c1=std::sqrt(x1*x1+y1*y1);
+    // float c2=std::sqrt(x2*x2+y2*y2);
+
+    for(size_t i=1;i < walls.size();i++){
+        float x1=character.getPosition().x-walls[obk].getPosition().x-walls[obk].getGlobalBounds().width/2.f;
+        float x2=character.getPosition().x-walls[i].getPosition().x-walls[i].getGlobalBounds().width/2.f;
+        float y1=character.getPosition().y+character.getGlobalBounds().height/2.f-walls[obk].getPosition().y;
+        float y2=character.getPosition().y+character.getGlobalBounds().height/2.f-walls[i].getPosition().y;
+        float c1=std::sqrt(x1*x1+y1*y1);
+        float c2=std::sqrt(x2*x2+y2*y2);
+        if(c2>c1&&walls[i].get_to_collect()==false){
+            obk=i;
+        }
+
+    }
+    walls[obk].set_to_collect();
+
+}
 void title_screen(){
     sf::Font bloody;
     if (!bloody.loadFromFile("fonts/BLOODY.ttf")) { return; }
@@ -67,8 +93,8 @@ void title_screen(){
             }
             //Start game Joystick
             if(sf::Joystick::isButtonPressed(0,7)){
-               window.close();
-               main_game();
+                window.close();
+                main_game();
             }
             //Close game Joystick
             if(sf::Joystick::isButtonPressed(0,6)){
@@ -111,8 +137,8 @@ void title_screen(){
         window.display();
     }
 }
-void Create_wall(std::vector<sf::Sprite> &walls, const sf::Texture &texture,int x,int y){
-    sf::Sprite wall;
+void Create_wall(std::vector<Wall> &walls, const sf::Texture &texture,int x,int y){
+    Wall wall;
     wall.setTexture(texture);
     wall.setTextureRect(sf::IntRect(0,0,175,25));
     wall.setPosition(x,y);
@@ -183,7 +209,7 @@ void main_game(){
     window.setVerticalSyncEnabled(true);
     window.setFramerateLimit(144);
 
-    std::vector<sf::Sprite> walls;
+    std::vector<Wall> walls;
     std::vector<sf::Sprite> mob_spawns;
     std::vector<std::unique_ptr<Enemy>> enemies;
     std::vector<std::unique_ptr<Bullet>> bullets;
@@ -193,6 +219,7 @@ void main_game(){
     sf::Clock clock_enemy;
     sf::Clock clock_gun;
     sf::Clock clock_double_shot;
+    sf::Clock clock_wall_to_obtain;
     sf::View view1(sf::FloatRect(0.f, 0.f, window.getSize().x, window.getSize().y));
     bool first_while=true;
     bool add_double_shot=true;
@@ -458,6 +485,11 @@ void main_game(){
 
             }
         }
+        //Create new object to obtain
+        if(clock_wall_to_obtain.getElapsedTime().asSeconds()>=10.0){
+            clock_wall_to_obtain.restart();
+            set_wall_to_obtain(*character,walls);
+        }
         //Create boss
         if(boss==nullptr&&character->get_points()>=100&&!character->get_killed_boss()){
             boss=std::make_unique<Boss>(texture_boss,font);
@@ -491,7 +523,7 @@ void main_game(){
         }
 
         character->set_ground_false();
-        for(const auto &item:walls){
+        for( auto &item:walls){
             if(character->on_ground()){
                 break;
             }
@@ -636,7 +668,10 @@ void main_game(){
 
 
         window.draw(space);
-        for(const auto&item:walls){
+        for(auto&item:walls){
+            if(item.get_to_collect()){
+                window.draw(item.get_outline());
+            }
             window.draw(item);
         }
         for(const auto&item:mob_spawns){

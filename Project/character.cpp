@@ -17,6 +17,8 @@ Character::Character(const sf::Texture &text)
      double_shot_clock=NULL;
      enabled_double_shot=false;
      jump_or_die=5.f;
+     extra_speed_gravitation=5;
+     extra_immortal_time=0.0;
 }
 Character::~Character(){
     delete jump_clock;
@@ -57,7 +59,7 @@ void Character::set_ground_false(){
     on_ground_left=false;
     on_ground_right=false;
 }
-void Character::check_left(const sf::Sprite &wall, const sf::Time &elapsed){
+void Character::check_left(Wall &wall, const sf::Time &elapsed){
     float pointX=getGlobalBounds().left;
     float pointY=getGlobalBounds().top+getGlobalBounds().height;
     if(!((wall.getGlobalBounds().top>pointY)&&
@@ -68,10 +70,15 @@ void Character::check_left(const sf::Sprite &wall, const sf::Time &elapsed){
     if(!(pointX>=wall.getGlobalBounds().left&&pointX<=(wall.getGlobalBounds().left+wall.getGlobalBounds().width))){
         return;
     }
+    if(wall.get_to_collect()){
+        wall.reset();
+        extra_immortal_time+=0.1;
+
+    }
     on_ground_left=true;
 
 }
-void Character::check_right(const sf::Sprite &wall,const sf::Time &elapsed){
+void Character::check_right(Wall &wall,const sf::Time &elapsed){
     float pointX=getGlobalBounds().left+getGlobalBounds().width;
     float pointY=getGlobalBounds().top+getGlobalBounds().height;
     if(!((wall.getGlobalBounds().top>pointY)&&
@@ -83,7 +90,13 @@ void Character::check_right(const sf::Sprite &wall,const sf::Time &elapsed){
     if(!(pointX>=wall.getGlobalBounds().left&&pointX<=(wall.getGlobalBounds().left+wall.getGlobalBounds().width))){
         return;
     }
+    if(wall.get_to_collect()){
+        wall.reset();
+        extra_immortal_time+=0.1;
+
+    }
     on_ground_right=true;
+    std::cout << speed_gravitation << std::endl;
 }
 bool Character::on_ground(){
     return (on_ground_left||on_ground_right);
@@ -138,7 +151,7 @@ void Character::add_points(int x){
 }
 void Character::collision(sf::Sound &sound){
     if(!(collision_clock==NULL)){
-        if(collision_clock->getElapsedTime().asSeconds()>=3.0){
+        if(collision_clock->getElapsedTime().asSeconds()>=3.0+extra_immortal_time){
 
             collision_clock->restart();
             delete collision_clock;
@@ -159,7 +172,7 @@ bool Character::immortal(){
     if(collision_clock==NULL){
         return false;
     } else {
-        if(collision_clock->getElapsedTime().asSeconds()<=3.0){
+        if(collision_clock->getElapsedTime().asSeconds()<=3.0 +extra_immortal_time){
             return true;
         }
         return false;

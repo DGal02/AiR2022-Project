@@ -2,11 +2,17 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <SFML/Audio.hpp>
+#include "wall.h"
 class Character : public sf::Sprite
 {
 private:
     int speed_x;
     int speed_gravitation;
+    int extra_speed_gravitation;
+    float extra_immortal_time;
+    int hp;
+    int points;
+    int const_a_gravitation;
     float jump_or_die;
     bool on_ground_left;
     bool on_ground_right;
@@ -15,9 +21,6 @@ private:
     sf::Clock* collision_clock;
     sf::Clock* double_shot_clock;
     float va_gravitation;
-    int hp;
-    int points;
-    int const_a_gravitation;
     bool killed_boss;
     sf::Vector2i mouse_position;
     sf::FloatRect bounds_double_shot;
@@ -31,8 +34,8 @@ public:
     void walk(const sf::Time &elapsed,int x,sf::View &my_view);
     void gravitation(const sf::Time &elapsed, sf::View &view);
     void set_ground_false();
-    void check_left(const sf::Sprite &wall,const sf::Time &elapsed);
-    void check_right(const sf::Sprite &wall,const sf::Time &elapsed);
+    void check_left(Wall &wall,const sf::Time &elapsed);
+    void check_right(Wall &wall,const sf::Time &elapsed);
     void set_jump();
     void jump(const sf::Time &elapsed, sf::View &view);
     void reduce_life(sf::Sound &sound,int x=1);

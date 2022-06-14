@@ -11,3 +11,4 @@ release/main.o
 release/my_functions.o
 release/potion.o
 release/shoter.o
+release/wall.o
