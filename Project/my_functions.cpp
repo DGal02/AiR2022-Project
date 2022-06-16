@@ -21,7 +21,9 @@ void set_wall_to_obtain(const Character &character,std::vector<Wall> &walls){
 
     // float c1=std::sqrt(x1*x1+y1*y1);
     // float c2=std::sqrt(x2*x2+y2*y2);
-
+    if(walls.size()==0){
+        return;
+    }
     for(size_t i=1;i < walls.size();i++){
         float x1=character.getPosition().x-walls[obk].getPosition().x-walls[obk].getGlobalBounds().width/2.f;
         float x2=character.getPosition().x-walls[i].getPosition().x-walls[i].getGlobalBounds().width/2.f;
@@ -389,6 +391,18 @@ void main_game(){
                         character->set_mouse_position(mouse_pos,character->getGlobalBounds());
                     }
 
+                }
+            }
+            if(event.type==sf::Event::KeyReleased||sf::Joystick::isButtonPressed(0, 1)){
+                if (event.key.code == sf::Keyboard::R||sf::Joystick::isButtonPressed(0, 1))
+                {
+
+                    view1.setCenter(character->getGlobalBounds().left+character->getGlobalBounds().width/2.f,character->getGlobalBounds().top);
+                }
+            }
+            if(event.type==sf::Event::KeyReleased||sf::Joystick::isButtonPressed(0,0)){
+                if(event.key.code==sf::Keyboard::Q||sf::Joystick::isButtonPressed(0,0)){
+                    character->teleport(view1);
                 }
             }
 

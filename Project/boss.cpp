@@ -16,10 +16,12 @@ Boss::Boss(const sf::Texture &texture,const sf::Font &font)
     text_hp.setFillColor(sf::Color::White);
     std::string from_file;
     std::ifstream FileRead("files/hp_boss.txt");
+    if(FileRead.fail()){
+        return;
+    }
         FileRead >> from_file;
         FileRead.close();
         hp=stoi(from_file);
-
 }
 void Boss::boss_move(const sf::Time &elapsed){
     rotate(elapsed.asSeconds()*50);

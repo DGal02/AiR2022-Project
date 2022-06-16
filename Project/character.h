@@ -27,6 +27,7 @@ private:
     sf::FloatRect bounds_double_shot;
     sf::RectangleShape jump_rectangle;
     sf::Clock jump_rectangle_clock;
+    sf::Clock teleport_clock;
 
 public:
     Character(const sf::Texture &texture);
@@ -47,6 +48,7 @@ public:
     void set_mouse_position(const sf::Vector2i &pos,const sf::FloatRect &bounds);
     void enable_double_shot();
     void set_rectangle_jump(sf::Sound &sound);
+    void teleport(sf::View &view);
     sf::Clock* r_jump_clock();
     int get_hp(); 
     int get_points();

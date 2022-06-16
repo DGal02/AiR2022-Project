@@ -21,11 +21,16 @@ Character::Character(const sf::Texture &text)
      extra_immortal_time=0.0;
      std::string from_file;
      std::string from_file2;
-     std::ifstream FileRead("files/hp_character.txt");
-         FileRead >> from_file >> from_file2;
+     std::string from_file3;
+     std::ifstream FileRead("files/character.txt");
+     if(FileRead.fail()){
+         return;
+     }
+         FileRead >> from_file >> from_file2 >>from_file3;
          FileRead.close();
          hp=stoi(from_file);
          const_a_gravitation=stoi(from_file2);
+         jump_or_die=stoi(from_file3);
 }
 Character::~Character(){
     delete jump_clock;
@@ -228,7 +233,7 @@ void Character::enable_double_shot(){
     enabled_double_shot=true;
 }
 void Character::set_rectangle_jump(sf::Sound &sound){
-    jump_rectangle.setSize(sf::Vector2f(40.f*jump_rectangle_clock.getElapsedTime().asSeconds(),20.f));
+    jump_rectangle.setSize(sf::Vector2f(200.f*jump_rectangle_clock.getElapsedTime().asSeconds()/jump_or_die,20.f));
     if(jump_rectangle_clock.getElapsedTime().asSeconds()>jump_or_die){
         reduce_life(sound,hp);
     }
@@ -248,4 +253,16 @@ void Character::set_rectangle_jump(sf::Sound &sound){
 }
 sf::RectangleShape Character::get_rectangle_jump(){
     return jump_rectangle;
+}
+void Character::teleport(sf::View &view){
+
+    if(teleport_clock.getElapsedTime().asSeconds()>=1.0&&jump_clock==NULL){
+        teleport_clock.restart();
+        float moveX=850.0-getGlobalBounds().left;
+        float moveY=300.0-getGlobalBounds().top;
+        move(moveX,moveY);
+        view.move(moveX,moveY);
+        va_gravitation=0;
+        jump_rectangle_clock.restart();
+    }
 }
