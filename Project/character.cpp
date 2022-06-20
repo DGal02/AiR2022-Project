@@ -11,7 +11,7 @@ Character::Character(const sf::Texture &text)
      collision_clock=NULL;
      va_gravitation=0;
      hp=5; //Wczytanie
-     points=0;
+     points=100;
      const_a_gravitation=400;
      killed_boss=false;
      double_shot_clock=NULL;
@@ -256,7 +256,7 @@ sf::RectangleShape Character::get_rectangle_jump(){
 }
 void Character::teleport(sf::View &view){
 
-    if(teleport_clock.getElapsedTime().asSeconds()>=1.0&&jump_clock==NULL){
+    if(teleport_clock.getElapsedTime().asSeconds()>=15.0&&jump_clock==NULL){
         teleport_clock.restart();
         float moveX=850.0-getGlobalBounds().left;
         float moveY=300.0-getGlobalBounds().top;

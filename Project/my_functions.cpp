@@ -470,7 +470,7 @@ void main_game(){
 
         //X axis mouse move
 
-        if(sf::Joystick::getAxisPosition(0,sf::Joystick::U)>=15.0 || sf::Joystick::getAxisPosition(0,sf::Joystick::U)<=-15.0){
+        if(sf::Joystick::getAxisPosition(0,sf::Joystick::U)>=25.0 || sf::Joystick::getAxisPosition(0,sf::Joystick::U)<=-25.0){
             mouse_move(elapsed,sf::Joystick::getAxisPosition(0,sf::Joystick::U),0);
         }
 
